@@ -35,9 +35,7 @@ def get_char_width(char):
     char = ord(char)
     if _char_in_map(char, _COMBINING_CHARS):
         return 0
-    if _char_in_map(char, _EAST_ASIAN_WILD_CHARS):
-        return 2
-    return 1
+    return 2 if _char_in_map(char, _EAST_ASIAN_WILD_CHARS) else 1
 
 def _char_in_map(char, map):
     for begin, end in map:

@@ -18,7 +18,7 @@ class PythonObject:
     def __getitem__(self, index):
         return (self.a, self.b)[index]
     def __str__(self):
-        return '(%s, %s)' % (self.a, self.b)
+        return f'({self.a}, {self.b})'
     def __len__(self):
         return 2
     __repr__ = __str__
@@ -159,7 +159,7 @@ class TestVariables(unittest.TestCase):
         obj = PythonObject('a', 1)
         self.varz['${obj}'] = obj
         assert_equal(self.varz['${obj}'], obj)
-        expected = ['Some text here %s and %s there' % (obj, obj)]
+        expected = [f'Some text here {obj} and {obj} there']
         actual = self.varz.replace_list(['Some text here ${obj} and ${obj} there'])
         assert_equal(actual, expected)
 
@@ -243,16 +243,24 @@ class TestVariables(unittest.TestCase):
             x_at_end = 'x' if (item.count('{') == item.count('}') and
                                item.count('[') == item.count(']')) else '${x}'
             assert_equal(v.replace_string(item, ignore_errors=True), item)
-            assert_equal(v.replace_string('${x}'+item+'${x}', ignore_errors=True),
-                         'x' + item + x_at_end)
+            assert_equal(
+                v.replace_string('${x}' + item + '${x}', ignore_errors=True),
+                f'x{item}{x_at_end}',
+            )
             assert_equal(v.replace_scalar(item, ignore_errors=True), item)
-            assert_equal(v.replace_scalar('${x}'+item+'${x}', ignore_errors=True),
-                         'x' + item + x_at_end)
+            assert_equal(
+                v.replace_scalar('${x}' + item + '${x}', ignore_errors=True),
+                f'x{item}{x_at_end}',
+            )
             assert_equal(v.replace_list([item], ignore_errors=True), [item])
             assert_equal(v.replace_list(['${X}', item, '@{Y}'], ignore_errors=True),
                          ['x', item, 1, 2, 3])
-            assert_equal(v.replace_list(['${x}'+item+'${x}', '@{NON}'], ignore_errors=True),
-                         ['x' + item + x_at_end, '@{NON}'])
+            assert_equal(
+                v.replace_list(
+                    ['${x}' + item + '${x}', '@{NON}'], ignore_errors=True
+                ),
+                [f'x{item}{x_at_end}', '@{NON}'],
+            )
 
     def test_sequence_subscript(self):
         sequences = (
@@ -294,7 +302,7 @@ class TestVariables(unittest.TestCase):
         assert_equal(self.varz.replace_scalar('${var}[${0}][2::2]'), [3, 5])
         assert_equal(self.varz.replace_scalar('${var}[0][2::2]'), [3, 5])
         assert_equal(self.varz.replace_scalar('${var}[1][${bytes_key}][2:]'), 'name')
-        assert_equal(self.varz.replace_scalar('${var}\\[1]'), str(var) + '[1]')
+        assert_equal(self.varz.replace_scalar('${var}\\[1]'), f'{str(var)}[1]')
         assert_equal(self.varz.replace_scalar('${var}[:][0][4]'), var[:][0][4])
         assert_equal(self.varz.replace_scalar('${var}[:-2]'), var[:-2])
         assert_equal(self.varz.replace_scalar('${var}[:7:-2]'), var[:7:-2])

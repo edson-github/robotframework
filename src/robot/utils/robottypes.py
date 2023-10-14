@@ -117,8 +117,7 @@ def type_repr(typ, nested=True):
 def _get_type_name(typ):
     # See comment in `type_name` for explanation about `_name`.
     for attr in '__name__', '_name':
-        name = getattr(typ, attr, None)
-        if name:
+        if name := getattr(typ, attr, None):
             return name
     return str(typ)
 
@@ -151,9 +150,7 @@ def is_truthy(item):
     Boolean values similarly as Robot Framework itself. See also
     :func:`is_falsy`.
     """
-    if is_string(item):
-        return item.upper() not in FALSE_STRINGS
-    return bool(item)
+    return item.upper() not in FALSE_STRINGS if is_string(item) else bool(item)
 
 
 def is_falsy(item):

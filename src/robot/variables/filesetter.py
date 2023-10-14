@@ -40,8 +40,7 @@ class VariableFileSetter:
     def _import_if_needed(self, path_or_variables, args=None):
         if not is_string(path_or_variables):
             return path_or_variables
-        LOGGER.info("Importing variable file '%s' with args %s"
-                    % (path_or_variables, args))
+        LOGGER.info(f"Importing variable file '{path_or_variables}' with args {args}")
         if path_or_variables.lower().endswith(('.yaml', '.yml')):
             importer = YamlImporter()
         elif path_or_variables.lower().endswith('.json'):
@@ -51,9 +50,10 @@ class VariableFileSetter:
         try:
             return importer.import_variables(path_or_variables, args)
         except:
-            args = 'with arguments %s ' % seq2str2(args) if args else ''
-            raise DataError("Processing variable file '%s' %sfailed: %s"
-                            % (path_or_variables, args, get_error_message()))
+            args = f'with arguments {seq2str2(args)} ' if args else ''
+            raise DataError(
+                f"Processing variable file '{path_or_variables}' {args}failed: {get_error_message()}"
+            )
 
     def _set(self, variables, overwrite=False):
         for name, value in variables:
@@ -73,8 +73,9 @@ class YamlImporter:
         with io.open(path, encoding='UTF-8') as stream:
             variables = self._load_yaml(stream)
         if not is_dict_like(variables):
-            raise DataError('YAML variable file must be a mapping, got %s.'
-                            % type_name(variables))
+            raise DataError(
+                f'YAML variable file must be a mapping, got {type_name(variables)}.'
+            )
         return variables.items()
 
     def _load_yaml(self, stream):
@@ -89,9 +90,7 @@ class YamlImporter:
     def _dot_dict(self, value):
         if is_dict_like(value):
             return DotDict((k, self._dot_dict(v)) for k, v in value.items())
-        if is_list_like(value):
-            return [self._dot_dict(v) for v in value]
-        return value
+        return [self._dot_dict(v) for v in value] if is_list_like(value) else value
 
 
 class PythonImporter:
@@ -118,8 +117,9 @@ class PythonImporter:
         variables = get_variables(*args)
         if is_dict_like(variables):
             return variables.items()
-        raise DataError("Expected '%s' to return dict-like value, got %s."
-                        % (get_variables.__name__, type_name(variables)))
+        raise DataError(
+            f"Expected '{get_variables.__name__}' to return dict-like value, got {type_name(variables)}."
+        )
 
     def _get_static(self, var_file):
         names = [attr for attr in dir(var_file) if not attr.startswith('_')]
@@ -139,9 +139,7 @@ class PythonImporter:
     def _decorate(self, name):
         if name.startswith('LIST__'):
             return '@{%s}' % name[6:]
-        if name.startswith('DICT__'):
-            return '&{%s}' % name[6:]
-        return '${%s}' % name
+        return '&{%s}' % name[6:] if name.startswith('DICT__') else '${%s}' % name
 
     def _validate(self, name, value):
         if name[0] == '@' and not is_list_like(value):
@@ -164,13 +162,12 @@ class JsonImporter:
         with io.open(path, encoding='UTF-8') as stream:
             variables = json.load(stream)
         if not is_dict_like(variables):
-            raise DataError('JSON variable file must be a mapping, got %s.'
-                            % type_name(variables))
+            raise DataError(
+                f'JSON variable file must be a mapping, got {type_name(variables)}.'
+            )
         return variables.items()
 
     def _dot_dict(self, value):
         if is_dict_like(value):
             return DotDict((k, self._dot_dict(v)) for k, v in value.items())
-        if is_list_like(value):
-            return [self._dot_dict(v) for v in value]
-        return value
+        return [self._dot_dict(v) for v in value] if is_list_like(value) else value

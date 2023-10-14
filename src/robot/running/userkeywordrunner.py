@@ -198,17 +198,13 @@ class UserKeywordRunner:
         except DataError as err:
             raise VariableError(f'Replacing variables from keyword return '
                                 f'value failed: {err}')
-        if len(ret) != 1 or contains_list_var:
-            return ret
-        return ret[0]
+        return ret if len(ret) != 1 or contains_list_var else ret[0]
 
     def _run_setup_or_teardown(self, item, context):
         try:
             name = context.variables.replace_string(item.name)
         except DataError as err:
-            if context.dry_run:
-                return None
-            return ExecutionFailed(err.message, syntax=True)
+            return None if context.dry_run else ExecutionFailed(err.message, syntax=True)
         if name.upper() in ('', 'NONE'):
             return None
         try:
@@ -232,8 +228,7 @@ class UserKeywordRunner:
                 context.output.message(message)
         self._resolve_arguments(args)
         with context.user_keyword(self._handler):
-            timeout = self._get_timeout()
-            if timeout:
+            if timeout := self._get_timeout():
                 result.timeout = str(timeout)
             error, _ = self._execute(context)
             if error:

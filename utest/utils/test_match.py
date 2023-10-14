@@ -127,9 +127,9 @@ class TestMatcher(unittest.TestCase):
         self._matches_not('[x]', '[x]')
         self._matches('[x]', '[[]x]')
         for wild in '*?[]':
-            self._matches(wild, '[%s]' % wild)
-            self._matches('foo%sbar' % wild, 'foo[%s]bar' % wild)
-            self._matches('foo%sbar' % wild, '*[%s]???' % wild)
+            self._matches(wild, f'[{wild}]')
+            self._matches(f'foo{wild}bar', f'foo[{wild}]bar')
+            self._matches(f'foo{wild}bar', f'*[{wild}]???')
 
     def test_spaceless(self):
         for text in ['fbar', 'foobar']:

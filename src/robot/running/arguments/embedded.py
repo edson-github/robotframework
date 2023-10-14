@@ -137,5 +137,6 @@ class EmbeddedArgumentParser:
         try:
             return re.compile(''.join(pattern), re.IGNORECASE)
         except Exception:
-            raise DataError("Compiling embedded arguments regexp failed: %s"
-                            % get_error_message())
+            raise DataError(
+                f"Compiling embedded arguments regexp failed: {get_error_message()}"
+            )

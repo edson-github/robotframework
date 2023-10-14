@@ -10,8 +10,9 @@ class BinaryDataLibrary:
         print("*INFO* All bytes printed successfully")
 
     def raise_byte_error(self):
-        raise AssertionError("Bytes 0, 10, 127, 255: '%s', '%s', '%s', '%s'"
-                             % (chr(0), chr(10), chr(127), chr(255)))
+        raise AssertionError(
+            f"Bytes 0, 10, 127, 255: '{chr(0)}', '{chr(10)}', '{chr(127)}', '{chr(255)}'"
+        )
 
     def print_binary_data(self):
         print(os.urandom(100))

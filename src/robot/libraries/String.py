@@ -127,7 +127,7 @@ class String:
             exclude = [e.strip() for e in exclude.split(',')]
         elif not exclude:
             exclude = []
-        exclude = [re.compile('^%s$' % e) for e in exclude]
+        exclude = [re.compile(f'^{e}$') for e in exclude]
 
         def title(word):
             if any(e.match(word) for e in exclude) or not word.islower():
@@ -213,8 +213,10 @@ class String:
         """
         if os.path.isabs(template) and os.path.isfile(template):
             template = template.replace('/', os.sep)
-            logger.info('Reading template from file <a href="%s">%s</a>.'
-                        % (template, template), html=True)
+            logger.info(
+                f'Reading template from file <a href="{template}">{template}</a>.',
+                html=True,
+            )
             with FileReader(template) as reader:
                 template = reader.read()
         return template.format(*positional, **named)
@@ -375,7 +377,7 @@ class String:
         if is_truthy(partial_match):
             match = re.compile(pattern, flags=parse_re_flags(flags)).search
         else:
-            match = re.compile(pattern + '$', flags=parse_re_flags(flags)).match
+            match = re.compile(f'{pattern}$', flags=parse_re_flags(flags)).match
         return self._get_matching_lines(string, match)
 
     def _get_matching_lines(self, string, matches):
@@ -685,7 +687,7 @@ class String:
                       'RIGHT': string.rstrip,
                       'NONE': lambda characters: string}[mode.upper()]
         except KeyError:
-            raise ValueError("Invalid mode '%s'." % mode)
+            raise ValueError(f"Invalid mode '{mode}'.")
         return method(characters)
 
     def should_be_string(self, item, msg=None):
@@ -787,16 +789,13 @@ class String:
     def _convert_to_index(self, value, name):
         if value == '':
             return 0
-        if value is None:
-            return None
-        return self._convert_to_integer(value, name)
+        return None if value is None else self._convert_to_integer(value, name)
 
     def _convert_to_integer(self, value, name):
         try:
             return int(value)
         except ValueError:
-            raise ValueError("Cannot convert '%s' argument '%s' to an integer."
-                             % (name, value))
+            raise ValueError(f"Cannot convert '{name}' argument '{value}' to an integer.")
 
     def _fail(self, message, default_template, *items):
         if not message:

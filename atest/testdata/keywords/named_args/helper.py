@@ -11,11 +11,9 @@ def get_result_or_error(*args):
 
 def pretty(*args, **kwargs):
     args = [to_str(a) for a in args]
-    kwargs = ['%s:%s' % (k, to_str(v)) for k, v in sorted(kwargs.items())]
+    kwargs = [f'{k}:{to_str(v)}' for k, v in sorted(kwargs.items())]
     return ', '.join(args + kwargs)
 
 
 def to_str(arg):
-    if is_string(arg):
-        return arg
-    return '%s (%s)' % (arg, type(arg).__name__)
+    return arg if is_string(arg) else f'{arg} ({type(arg).__name__})'

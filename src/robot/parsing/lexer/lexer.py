@@ -127,10 +127,7 @@ class Lexer:
         return tokens
 
     def _get_tokens(self, statements: 'Iterable[list[Token]]') -> 'Iterator[Token]':
-        if self.data_only:
-            ignored_types = {None, Token.COMMENT}
-        else:
-            ignored_types = {None}
+        ignored_types = {None, Token.COMMENT} if self.data_only else {None}
         inline_if_type = Token.INLINE_IF
         for statement in statements:
             last = None
@@ -183,10 +180,14 @@ class Lexer:
     def _is_commented_or_empty(self, line: 'list[Token]') -> bool:
         separator_or_ignore = (Token.SEPARATOR, None)
         comment_or_eol = (Token.COMMENT, Token.EOL)
-        for token in line:
-            if token.type not in separator_or_ignore:
-                return token.type in comment_or_eol
-        return False
+        return next(
+            (
+                token.type in comment_or_eol
+                for token in line
+                if token.type not in separator_or_ignore
+            ),
+            False,
+        )
 
     def _tokenize_variables(self, tokens: 'Iterator[Token]') -> 'Iterator[Token]':
         for token in tokens:

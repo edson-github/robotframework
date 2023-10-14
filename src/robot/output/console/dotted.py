@@ -63,7 +63,7 @@ class DottedOutput(LoggerApi):
             self.stderr.error(msg.message, msg.level)
 
     def output_file(self, name, path):
-        self.stdout.write(f"{name+':':8} {path}\n")
+        self.stdout.write(f"{f'{name}:':8} {path}\n")
 
 
 class StatusReporter(SuiteVisitor):

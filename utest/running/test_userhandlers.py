@@ -197,9 +197,12 @@ class TestGetArgSpec(unittest.TestCase):
                            'Only last argument can be kwargs.')
 
     def _verify_error(self, in_args, exp_error):
-        assert_raises_with_msg(DataError,
-                               'Invalid argument specification: ' + exp_error,
-                               self._parse, in_args)
+        assert_raises_with_msg(
+            DataError,
+            f'Invalid argument specification: {exp_error}',
+            self._parse,
+            in_args,
+        )
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ class NonAsciiLibrary:
     def print_non_ascii_strings(self):
         """Prints message containing non-ASCII characters"""
         for msg in MESSAGES:
-            print('*INFO*' + msg)
+            print(f'*INFO*{msg}')
 
     def print_and_return_non_ascii_object(self):
         """Prints object with non-ASCII `str()` and returns it."""

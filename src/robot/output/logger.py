@@ -121,7 +121,7 @@ class Logger(AbstractLogger):
         try:
             syslog = FileLogger(path, level)
         except DataError as err:
-            self.error("Opening syslog file '%s' failed: %s" % (path, err.message))
+            self.error(f"Opening syslog file '{path}' failed: {err.message}")
         else:
             self._syslog = self._wrap_and_relay(syslog)
 

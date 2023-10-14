@@ -33,7 +33,7 @@ class Interpreter:
                                              stderr=subprocess.STDOUT,
                                              encoding='UTF-8')
         except (subprocess.CalledProcessError, FileNotFoundError) as err:
-            raise ValueError('Failed to get interpreter version: %s' % err)
+            raise ValueError(f'Failed to get interpreter version: {err}')
         name, version = output.split()[:2]
         name = name if 'PyPy' not in output else 'PyPy'
         version = re.match(r'\d+\.\d+\.\d+', version).group()
@@ -41,12 +41,18 @@ class Interpreter:
 
     @property
     def os(self):
-        for condition, name in [(self.is_linux, 'Linux'),
-                                (self.is_osx, 'OS X'),
-                                (self.is_windows, 'Windows')]:
-            if condition:
-                return name
-        return sys.platform
+        return next(
+            (
+                name
+                for condition, name in [
+                    (self.is_linux, 'Linux'),
+                    (self.is_osx, 'OS X'),
+                    (self.is_windows, 'Windows'),
+                ]
+                if condition
+            ),
+            sys.platform,
+        )
 
     @property
     def output_name(self):

@@ -24,7 +24,7 @@ TEMP = getenv('TEMPDIR', tempfile.gettempdir())
 OUTPUT_PATH = join(TEMP, 'output.xml')
 REPORT_PATH = join(TEMP, 'report.html')
 LOG_PATH = join(TEMP, 'log.html')
-LOG = 'Log:     %s' % LOG_PATH
+LOG = f'Log:     {LOG_PATH}'
 
 
 def run_without_outputs(*args, **kwargs):
@@ -126,12 +126,17 @@ class TestRun(RunningTestCase):
 
     def test_pass_listener_as_string(self):
         module_file = join(ROOT, 'utest', 'resources', 'Listener.py')
-        assert_equal(run_without_outputs(self.data, listener=module_file+":1"), 1)
+        assert_equal(run_without_outputs(self.data, listener=f"{module_file}:1"), 1)
         self._assert_outputs([("[from listener 1]", 1)])
 
     def test_pass_listener_as_list(self):
         module_file = join(ROOT, 'utest', 'resources', 'Listener.py')
-        assert_equal(run_without_outputs(self.data, listener=[module_file+":1", Listener(2)]), 1)
+        assert_equal(
+            run_without_outputs(
+                self.data, listener=[f"{module_file}:1", Listener(2)]
+            ),
+            1,
+        )
         self._assert_outputs([("[from listener 1]", 1), ("[from listener 2]", 1)])
 
     def test_pre_run_modifier_as_instance(self):
@@ -291,7 +296,7 @@ class TestStateBetweenTestRuns(RunningTestCase):
 
     def test_listener_unregistration(self):
         listener = join(ROOT, 'utest', 'resources', 'Listener.py')
-        self._run(self.data, listener=listener+':1', rc=0)
+        self._run(self.data, listener=f'{listener}:1', rc=0)
         self._assert_outputs([("[from listener 1]", 1), ("[listener close]", 1)])
         self._run(self.data, rc=0)
         self._assert_outputs([("[from listener 1]", 0), ("[listener close]", 0)])

@@ -82,7 +82,7 @@ class TestNormalizedDict(unittest.TestCase):
         assert_equal(nd['foo'], 'bar')
 
     def test_initial_values_as_generator(self):
-        nd = NormalizedDict((item for item in [('key', 'value'), ('F O\tO', 'bar')]))
+        nd = NormalizedDict(iter([('key', 'value'), ('F O\tO', 'bar')]))
         assert_equal(nd['key'], 'value')
         assert_equal(nd['K EY'], 'value')
         assert_equal(nd['foo'], 'bar')
@@ -248,7 +248,7 @@ class TestNormalizedDict(unittest.TestCase):
         keys = list('123_aBcDeF')
         nd = NormalizedDict((k, 1) for k in keys)
         assert_equal(list(nd), keys)
-        assert_equal([key for key in nd], keys)
+        assert_equal(list(nd), keys)
 
     def test_keys_are_sorted(self):
         nd = NormalizedDict((c, None) for c in 'aBcDeFg123XyZ___')

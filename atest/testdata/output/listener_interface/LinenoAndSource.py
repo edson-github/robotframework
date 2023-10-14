@@ -24,7 +24,7 @@ class LinenoAndSource:
     def start_test(self, name, attrs):
         self.output = self.test_output
         self.report('START', type='TEST', name=name, **attrs)
-        self.output = open(os.path.join(TEMPDIR, name + '.txt'), 'w')
+        self.output = open(os.path.join(TEMPDIR, f'{name}.txt'), 'w')
 
     def end_test(self, name, attrs):
         self.output.close()

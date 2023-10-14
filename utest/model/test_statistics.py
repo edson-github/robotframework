@@ -164,17 +164,25 @@ class TestElapsedTime(unittest.TestCase):
 
     def setUp(self):
         ts = '2012-08-16 00:00:'
-        suite = TestSuite(start_time=ts+'00.000', end_time=ts+'59.999')
+        suite = TestSuite(start_time=f'{ts}00.000', end_time=f'{ts}59.999')
         suite.suites = [
-            TestSuite(start_time=ts+'00.000', end_time=ts+'30.000'),
-            TestSuite(start_time=ts+'30.000', end_time=ts+'42.042')
+            TestSuite(start_time=f'{ts}00.000', end_time=f'{ts}30.000'),
+            TestSuite(start_time=f'{ts}30.000', end_time=f'{ts}42.042'),
         ]
         suite.suites[0].tests = [
-            TestCase(start_time=ts+'00.000', end_time=ts+'00.001', tags=['t1']),
-            TestCase(start_time=ts+'00.001', end_time=ts+'01.001', tags=['t1', 't2'])
+            TestCase(
+                start_time=f'{ts}00.000', end_time=f'{ts}00.001', tags=['t1']
+            ),
+            TestCase(
+                start_time=f'{ts}00.001', end_time=f'{ts}01.001', tags=['t1', 't2']
+            ),
         ]
         suite.suites[1].tests = [
-            TestCase(start_time=ts+'30.000', end_time=ts+'40.000', tags=['t1', 't2', 't3'])
+            TestCase(
+                start_time=f'{ts}30.000',
+                end_time=f'{ts}40.000',
+                tags=['t1', 't2', 't3'],
+            )
         ]
         self.stats = Statistics(suite, tag_stat_combine=[('?2', 'combined')])
 
@@ -200,11 +208,15 @@ class TestElapsedTime(unittest.TestCase):
         suite = TestSuite()
         assert_equal(Statistics(suite).suite.stat.elapsed, timedelta())
         ts = '2012-08-16 00:00:'
-        suite.tests = [TestCase(start_time=ts+'00.000', end_time=ts+'00.001'),
-                       TestCase(start_time=ts+'00.001', end_time=ts+'01.001')]
+        suite.tests = [
+            TestCase(start_time=f'{ts}00.000', end_time=f'{ts}00.001'),
+            TestCase(start_time=f'{ts}00.001', end_time=f'{ts}01.001'),
+        ]
         assert_equal(Statistics(suite).suite.stat.elapsed, timedelta(seconds=1.001))
-        suite.suites = [TestSuite(start_time=ts+'02.000', end_time=ts+'12.000'),
-                        TestSuite()]
+        suite.suites = [
+            TestSuite(start_time=f'{ts}02.000', end_time=f'{ts}12.000'),
+            TestSuite(),
+        ]
         assert_equal(Statistics(suite).suite.stat.elapsed, timedelta(seconds=11.001))
 
     def test_elapsed_from_get_attributes(self):
@@ -219,8 +231,9 @@ class TestElapsedTime(unittest.TestCase):
                                ('00:00:01.500', '00:00:02'),
                                ('01:59:59.499', '01:59:59'),
                                ('01:59:59.500', '02:00:00')]:
-            suite = TestSuite(start_time='2012-08-17 00:00:00.000',
-                              end_time='2012-08-17 ' + time)
+            suite = TestSuite(
+                start_time='2012-08-17 00:00:00.000', end_time=f'2012-08-17 {time}'
+            )
             stat = Statistics(suite).suite.stat
             elapsed = stat.get_attributes(include_elapsed=True)['elapsed']
             assert_equal(elapsed, expected, time)

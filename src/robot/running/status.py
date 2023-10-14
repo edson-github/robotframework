@@ -122,9 +122,7 @@ class _ExecutionStatus:
     def status(self):
         if self.skipped or (self.parent and self.parent.skipped):
             return 'SKIP'
-        if self.failed:
-            return 'FAIL'
-        return 'PASS'
+        return 'FAIL' if self.failed else 'PASS'
 
     def _skip_on_failure(self):
         return False
@@ -136,9 +134,7 @@ class _ExecutionStatus:
     def message(self):
         if self.failure or self.exit:
             return self._my_message()
-        if self.parent and not self.parent.passed:
-            return self._parent_message()
-        return ''
+        return self._parent_message() if self.parent and not self.parent.passed else ''
 
     def _my_message(self):
         raise NotImplementedError
@@ -239,7 +235,7 @@ class _Message:
 
     def _format_setup_or_teardown_message(self, prefix, message):
         if message.startswith('*HTML*'):
-            prefix = '*HTML* ' + prefix
+            prefix = f'*HTML* {prefix}'
             message = message[6:].lstrip()
         return prefix % message
 
@@ -259,7 +255,7 @@ class _Message:
         if teardown.startswith('*HTML*'):
             teardown = teardown[6:].lstrip()
             if not message.startswith('*HTML*'):
-                message = '*HTML* ' + html_escape(message)
+                message = f'*HTML* {html_escape(message)}'
         elif message.startswith('*HTML*'):
             teardown = html_escape(teardown)
         if self.failure.teardown:
@@ -285,16 +281,13 @@ class TestMessage(_Message):
 
     @property
     def message(self):
-        message = super().message
-        if message:
+        if message := super().message:
             return message
         if self.exit.failure:
             return self.exit_on_failure_message
         if self.exit.fatal:
             return self.exit_on_fatal_message
-        if self.exit.error:
-            return self.exit_on_error_message
-        return ''
+        return self.exit_on_error_message if self.exit.error else ''
 
 
 class SuiteMessage(_Message):

@@ -245,7 +245,7 @@ class OperatingSystem:
 
     def _run(self, command):
         process = _Process(command)
-        self._info("Running command '%s'." % process)
+        self._info(f"Running command '{process}'.")
         stdout = process.read()
         rc = process.close()
         return rc, stdout
@@ -381,7 +381,7 @@ class OperatingSystem:
         """
         path = self._absnorm(path)
         if not self._glob(path):
-            self._fail(msg, "Path '%s' does not exist." % path)
+            self._fail(msg, f"Path '{path}' does not exist.")
         self._link("Path '%s' exists.", path)
 
     def should_not_exist(self, path, msg=None):
@@ -393,8 +393,7 @@ class OperatingSystem:
         The default error message can be overridden with the ``msg`` argument.
         """
         path = self._absnorm(path)
-        matches = self._glob(path)
-        if matches:
+        if matches := self._glob(path):
             self._fail(msg, self._get_matches_error('Path', path, matches))
         self._link("Path '%s' does not exist.", path)
 
@@ -403,8 +402,8 @@ class OperatingSystem:
 
     def _get_matches_error(self, what, path, matches):
         if not self._is_glob_path(path):
-            return "%s '%s' exists." % (what, path)
-        return "%s '%s' matches %s." % (what, path, seq2str(sorted(matches)))
+            return f"{what} '{path}' exists."
+        return f"{what} '{path}' matches {seq2str(sorted(matches))}."
 
     def _is_glob_path(self, path):
         return '*' in path or '?' in path or ('[' in path and ']' in path)
@@ -420,7 +419,7 @@ class OperatingSystem:
         path = self._absnorm(path)
         matches = [p for p in self._glob(path) if os.path.isfile(p)]
         if not matches:
-            self._fail(msg, "File '%s' does not exist." % path)
+            self._fail(msg, f"File '{path}' does not exist.")
         self._link("File '%s' exists.", path)
 
     def file_should_not_exist(self, path, msg=None):
@@ -432,8 +431,7 @@ class OperatingSystem:
         The default error message can be overridden with the ``msg`` argument.
         """
         path = self._absnorm(path)
-        matches = [p for p in self._glob(path) if os.path.isfile(p)]
-        if matches:
+        if matches := [p for p in self._glob(path) if os.path.isfile(p)]:
             self._fail(msg, self._get_matches_error('File', path, matches))
         self._link("File '%s' does not exist.", path)
 
@@ -448,7 +446,7 @@ class OperatingSystem:
         path = self._absnorm(path)
         matches = [p for p in self._glob(path) if os.path.isdir(p)]
         if not matches:
-            self._fail(msg, "Directory '%s' does not exist." % path)
+            self._fail(msg, f"Directory '{path}' does not exist.")
         self._link("Directory '%s' exists.", path)
 
     def directory_should_not_exist(self, path, msg=None):
@@ -460,8 +458,7 @@ class OperatingSystem:
         The default error message can be overridden with the ``msg`` argument.
         """
         path = self._absnorm(path)
-        matches = [p for p in self._glob(path) if os.path.isdir(p)]
-        if matches:
+        if matches := [p for p in self._glob(path) if os.path.isdir(p)]:
             self._fail(msg, self._get_matches_error('Directory', path, matches))
         self._link("Directory '%s' does not exist.", path)
 
@@ -488,8 +485,7 @@ class OperatingSystem:
         maxtime = time.time() + timeout
         while self._glob(path):
             if timeout >= 0 and time.time() > maxtime:
-                self._fail("'%s' was not removed in %s."
-                           % (path, secs_to_timestr(timeout)))
+                self._fail(f"'{path}' was not removed in {secs_to_timestr(timeout)}.")
             time.sleep(0.1)
         self._link("'%s' was removed.", path)
 
@@ -514,8 +510,7 @@ class OperatingSystem:
         maxtime = time.time() + timeout
         while not self._glob(path):
             if timeout >= 0 and time.time() > maxtime:
-                self._fail("'%s' was not created in %s."
-                           % (path, secs_to_timestr(timeout)))
+                self._fail(f"'{path}' was not created in {secs_to_timestr(timeout)}.")
             time.sleep(0.1)
         self._link("'%s' was created.", path)
 
@@ -527,8 +522,7 @@ class OperatingSystem:
         The default error message can be overridden with the ``msg`` argument.
         """
         path = self._absnorm(path)
-        items = self._list_dir(path)
-        if items:
+        if items := self._list_dir(path):
             self._fail(msg, "Directory '%s' is not empty. Contents: %s."
                             % (path, seq2str(items, lastsep=', ')))
         self._link("Directory '%s' is empty.", path)
@@ -541,7 +535,7 @@ class OperatingSystem:
         path = self._absnorm(path)
         items = self._list_dir(path)
         if not items:
-            self._fail(msg, "Directory '%s' is empty." % path)
+            self._fail(msg, f"Directory '{path}' is empty.")
         self._link("Directory '%%s' contains %d item%s."
                    % (len(items), plural_or_not(items)), path)
 
@@ -552,7 +546,7 @@ class OperatingSystem:
         """
         path = self._absnorm(path)
         if not os.path.isfile(path):
-            self._error("File '%s' does not exist." % path)
+            self._error(f"File '{path}' does not exist.")
         size = os.stat(path).st_size
         if size > 0:
             self._fail(msg,
@@ -566,10 +560,10 @@ class OperatingSystem:
         """
         path = self._absnorm(path)
         if not os.path.isfile(path):
-            self._error("File '%s' does not exist." % path)
+            self._error(f"File '{path}' does not exist.")
         size = os.stat(path).st_size
         if size == 0:
-            self._fail(msg, "File '%s' is empty." % path)
+            self._fail(msg, f"File '{path}' is empty.")
         self._link("File '%%s' contains %d bytes." % size, path)
 
     # Creating and removing files and directory
@@ -666,7 +660,7 @@ class OperatingSystem:
             self._link("File '%s' does not exist.", path)
         for match in matches:
             if not os.path.isfile(match):
-                self._error("Path '%s' is not a file." % match)
+                self._error(f"Path '{match}' is not a file.")
             os.remove(match)
             self._link("Removed file '%s'.", match)
 
@@ -705,7 +699,7 @@ class OperatingSystem:
         if os.path.isdir(path):
             self._link("Directory '%s' already exists.", path )
         elif os.path.exists(path):
-            self._error("Path '%s' is not a directory." % path)
+            self._error(f"Path '{path}' is not a directory.")
         else:
             os.makedirs(path)
             self._link("Created directory '%s'.", path)
@@ -724,13 +718,12 @@ class OperatingSystem:
         if not os.path.exists(path):
             self._link("Directory '%s' does not exist.", path)
         elif not os.path.isdir(path):
-            self._error("Path '%s' is not a directory." % path)
+            self._error(f"Path '{path}' is not a directory.")
         else:
             if is_truthy(recursive):
                 shutil.rmtree(path)
             else:
-                self.directory_should_be_empty(
-                    path, "Directory '%s' is not empty." % path)
+                self.directory_should_be_empty(path, f"Directory '{path}' is not empty.")
                 os.rmdir(path)
             self._link("Removed directory '%s'.", path)
 
@@ -781,13 +774,13 @@ class OperatingSystem:
         source = self._absnorm(source)
         sources = self._glob(source)
         if len(sources) > 1:
-            self._error("Multiple matches with source pattern '%s'." % source)
+            self._error(f"Multiple matches with source pattern '{source}'.")
         if sources:
             source = sources[0]
         if not os.path.exists(source):
-            self._error("Source file '%s' does not exist." % source)
+            self._error(f"Source file '{source}' does not exist.")
         if not os.path.isfile(source):
-            self._error("Source file '%s' is not a regular file." % source)
+            self._error(f"Source file '{source}' is not a regular file.")
         return source
 
     def _normalize_copy_and_move_destination(self, destination):
@@ -803,7 +796,7 @@ class OperatingSystem:
         if not os.path.exists(path):
             os.makedirs(path)
         elif not os.path.isdir(path):
-            self._error("Destination '%s' exists and is not a directory." % path)
+            self._error(f"Destination '{path}' exists and is not a directory.")
 
     def _are_source_and_destination_same_file(self, source, destination):
         if self._force_normalize(source) == self._force_normalize(destination):
@@ -924,11 +917,11 @@ class OperatingSystem:
         source = self._absnorm(source)
         destination = self._absnorm(destination)
         if not os.path.exists(source):
-            self._error("Source '%s' does not exist." % source)
+            self._error(f"Source '{source}' does not exist.")
         if not os.path.isdir(source):
-            self._error("Source '%s' is not a directory." % source)
+            self._error(f"Source '{source}' is not a directory.")
         if os.path.exists(destination) and not os.path.isdir(destination):
-            self._error("Destination '%s' is not a directory." % destination)
+            self._error(f"Destination '{destination}' is not a directory.")
         if os.path.exists(destination):
             base = os.path.basename(source)
             destination = os.path.join(destination, base)
@@ -967,7 +960,7 @@ class OperatingSystem:
         """
         value = get_env_var(name, default)
         if value is None:
-            self._error("Environment variable '%s' does not exist." % name)
+            self._error(f"Environment variable '{name}' does not exist.")
         return value
 
     def set_environment_variable(self, name, value):
@@ -977,8 +970,7 @@ class OperatingSystem:
         automatically encoded using the system encoding.
         """
         set_env_var(name, value)
-        self._info("Environment variable '%s' set to value '%s'."
-                   % (name, value))
+        self._info(f"Environment variable '{name}' set to value '{value}'.")
 
     def append_to_environment_variable(self, name, *values, **config):
         """Appends given ``values`` to environment variable ``name``.
@@ -1021,11 +1013,10 @@ class OperatingSystem:
         keyword as separate arguments.
         """
         for name in names:
-            value = del_env_var(name)
-            if value:
-                self._info("Environment variable '%s' deleted." % name)
+            if value := del_env_var(name):
+                self._info(f"Environment variable '{name}' deleted.")
             else:
-                self._info("Environment variable '%s' does not exist." % name)
+                self._info(f"Environment variable '{name}' does not exist.")
 
     def environment_variable_should_be_set(self, name, msg=None):
         """Fails if the specified environment variable is not set.
@@ -1034,19 +1025,17 @@ class OperatingSystem:
         """
         value = get_env_var(name)
         if not value:
-            self._fail(msg, "Environment variable '%s' is not set." % name)
-        self._info("Environment variable '%s' is set to '%s'." % (name, value))
+            self._fail(msg, f"Environment variable '{name}' is not set.")
+        self._info(f"Environment variable '{name}' is set to '{value}'.")
 
     def environment_variable_should_not_be_set(self, name, msg=None):
         """Fails if the specified environment variable is set.
 
         The default error message can be overridden with the ``msg`` argument.
         """
-        value = get_env_var(name)
-        if value:
-            self._fail(msg, "Environment variable '%s' is set to '%s'."
-                            % (name, value))
-        self._info("Environment variable '%s' is not set." % name)
+        if value := get_env_var(name):
+            self._fail(msg, f"Environment variable '{name}' is set to '{value}'.")
+        self._info(f"Environment variable '{name}' is not set.")
 
     def get_environment_variables(self):
         """Returns currently available environment variables as a dictionary.
@@ -1065,7 +1054,7 @@ class OperatingSystem:
         """
         variables = get_env_vars()
         for name in sorted(variables, key=lambda item: item.lower()):
-            self._log('%s = %s' % (name, variables[name]), level)
+            self._log(f'{name} = {variables[name]}', level)
         return variables
 
     # Path
@@ -1250,7 +1239,7 @@ class OperatingSystem:
         """
         path = self._absnorm(path)
         if not os.path.exists(path):
-            self._error("Path '%s' does not exist." % path)
+            self._error(f"Path '{path}' does not exist.")
         mtime = get_time(format, os.stat(path).st_mtime)
         self._link("Last modified time of '%%s' is %s." % mtime, path)
         return mtime
@@ -1294,9 +1283,9 @@ class OperatingSystem:
         mtime = parse_time(mtime)
         path = self._absnorm(path)
         if not os.path.exists(path):
-            self._error("File '%s' does not exist." % path)
+            self._error(f"File '{path}' does not exist.")
         if not os.path.isfile(path):
-            self._error("Path '%s' is not a regular file." % path)
+            self._error(f"Path '{path}' is not a regular file.")
         os.utime(path, (mtime, mtime))
         time.sleep(0.1)    # Give OS some time to really set these times.
         tstamp = datetime.fromtimestamp(mtime).isoformat(' ', timespec='seconds')
@@ -1306,7 +1295,7 @@ class OperatingSystem:
         """Returns and logs file size as an integer in bytes."""
         path = self._absnorm(path)
         if not os.path.isfile(path):
-            self._error("File '%s' does not exist." % path)
+            self._error(f"File '{path}' does not exist.")
         size = os.stat(path).st_size
         plural = plural_or_not(size)
         self._link("Size of file '%%s' is %d byte%s." % (size, plural), path)
@@ -1363,26 +1352,26 @@ class OperatingSystem:
         with the built-in keyword `Should Be Equal As Integers`.
         """
         count = len(self._list_dir(path, pattern))
-        self._info("%s item%s." % (count, plural_or_not(count)))
+        self._info(f"{count} item{plural_or_not(count)}.")
         return count
 
     def count_files_in_directory(self, path, pattern=None):
         """Wrapper for `Count Items In Directory` returning only file count."""
         count = len(self._list_files_in_dir(path, pattern))
-        self._info("%s file%s." % (count, plural_or_not(count)))
+        self._info(f"{count} file{plural_or_not(count)}.")
         return count
 
     def count_directories_in_directory(self, path, pattern=None):
         """Wrapper for `Count Items In Directory` returning only directory count."""
         count = len(self._list_dirs_in_dir(path, pattern))
-        self._info("%s director%s." % (count, 'y' if count == 1 else 'ies'))
+        self._info(f"{count} director{'y' if count == 1 else 'ies'}.")
         return count
 
     def _list_dir(self, path, pattern=None, absolute=False):
         path = self._absnorm(path)
         self._link("Listing contents of directory '%s'.", path)
         if not os.path.isdir(path):
-            self._error("Directory '%s' does not exist." % path)
+            self._error(f"Directory '{path}' does not exist.")
         # result is already unicode but safe_str also handles NFC normalization
         items = sorted(safe_str(item) for item in os.listdir(path))
         if pattern:
@@ -1411,7 +1400,7 @@ class OperatingSystem:
         """
         path = self._absnorm(path)
         if os.path.isdir(path):
-            self._error("Cannot touch '%s' because it is a directory." % path)
+            self._error(f"Cannot touch '{path}' because it is a directory.")
         if not os.path.exists(os.path.dirname(path)):
             self._error("Cannot touch '%s' because its parent directory does "
                         "not exist." % path)
@@ -1436,7 +1425,7 @@ class OperatingSystem:
         self._log(msg, 'INFO')
 
     def _link(self, msg, *paths):
-        paths = tuple('<a href="file://%s">%s</a>' % (p, p) for p in paths)
+        paths = tuple(f'<a href="file://{p}">{p}</a>' for p in paths)
         self._log(msg % paths, 'HTML')
 
     def _warn(self, msg):
@@ -1470,14 +1459,12 @@ class _Process:
         # In other OS:
         #   Return code must be converted with 'rc >> 8' and it is
         #   between 0-255 after conversion
-        if WINDOWS:
-            return rc % 256
-        return rc >> 8
+        return rc % 256 if WINDOWS else rc >> 8
 
     def _process_command(self, command):
         if '>' not in command:
             if command.endswith('&'):
-                command = command[:-1] + ' 2>&1 &'
+                command = f'{command[:-1]} 2>&1 &'
             else:
                 command += ' 2>&1'
         return command

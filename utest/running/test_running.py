@@ -287,13 +287,18 @@ class TestListeners(RunningTestCase):
     def test_listeners(self):
         module_file = join(ROOTDIR, 'utest', 'resources', 'Listener.py')
         suite = build('setups_and_teardowns.robot')
-        suite.run(output=None, log=None, report=None, listener=[module_file+":1", Listener(2)])
+        suite.run(
+            output=None,
+            log=None,
+            report=None,
+            listener=[f"{module_file}:1", Listener(2)],
+        )
         self._assert_outputs([("[from listener 1]", 1), ("[from listener 2]", 1)])
 
     def test_listeners_unregistration(self):
         module_file = join(ROOTDIR, 'utest', 'resources', 'Listener.py')
         suite = build('setups_and_teardowns.robot')
-        suite.run(output=None, log=None, report=None, listener=module_file+":1")
+        suite.run(output=None, log=None, report=None, listener=f"{module_file}:1")
         self._assert_outputs([("[from listener 1]", 1), ("[listener close]", 1)])
         self._clear_outputs()
         suite.run(output=None, log=None, report=None)

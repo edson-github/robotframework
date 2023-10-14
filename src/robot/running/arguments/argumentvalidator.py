@@ -29,7 +29,7 @@ class ArgumentValidator:
         self.arg_spec = arg_spec
 
     def validate(self, positional, named, dryrun=False):
-        named = set(name for name, value in named)
+        named = {name for name, value in named}
         if dryrun and (any(is_list_variable(arg) for arg in positional) or
                        any(is_dict_variable(arg) for arg in named)):
             return
@@ -82,14 +82,16 @@ class ArgumentValidator:
 
     def _validate_no_named_only_missing(self, named, spec):
         defined = set(named) | set(spec.defaults)
-        missing = [arg for arg in spec.named_only if arg not in defined]
-        if missing:
+        if missing := [arg for arg in spec.named_only if arg not in defined]:
             self._raise_error(f"missing named-only argument{s(missing)} "
                               f"{seq2str(sorted(missing))}")
 
     def _validate_no_extra_named(self, named, spec):
         if not spec.var_named:
-            extra = set(named) - set(spec.positional_or_named) - set(spec.named_only)
-            if extra:
+            if (
+                extra := set(named)
+                - set(spec.positional_or_named)
+                - set(spec.named_only)
+            ):
                 self._raise_error(f"got unexpected named argument{s(extra)} "
                                   f"{seq2str(sorted(extra))}")

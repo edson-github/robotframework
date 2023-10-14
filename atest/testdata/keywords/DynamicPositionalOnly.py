@@ -14,12 +14,10 @@ class DynamicPositionalOnly:
     }
 
     def get_keyword_names(self):
-        return [key for key in self.kws]
+        return list(self.kws)
 
     def run_keyword(self, name, args, kwargs=None):
-        if kwargs:
-            return f"{name}-{args}-{kwargs}"
-        return f"{name}-{args}"
+        return f"{name}-{args}-{kwargs}" if kwargs else f"{name}-{args}"
 
     def get_keyword_arguments(self, name):
         return self.kws[name]

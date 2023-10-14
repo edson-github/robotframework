@@ -17,9 +17,7 @@ class DynamicDocsLib(_BaseDynamicLibrary):
     def get_keyword_documentation(self, name):
         if name == '__intro__':
             return 'Dynamic intro doc.'
-        if name == '__init__':
-            return 'Dynamic init doc.'
-        return ''
+        return 'Dynamic init doc.' if name == '__init__' else ''
 
 class StaticAndDynamicDocsLib(_BaseDynamicLibrary):
     """This is static doc."""
@@ -28,9 +26,7 @@ class StaticAndDynamicDocsLib(_BaseDynamicLibrary):
     def get_keyword_documentation(self, name):
         if name == '__intro__':
             return 'dynamic override'
-        if name == '__init__':
-            return 'dynamic override'
-        return ''
+        return 'dynamic override' if name == '__init__' else ''
 
 class FailingDynamicDocLib(_BaseDynamicLibrary):
     """intro-o-o"""

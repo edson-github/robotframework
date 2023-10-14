@@ -25,7 +25,7 @@ def assert_escape_and_format(inp, exp_escape=None, exp_format=None):
 def assert_format(inp, exp=None, p=False):
     exp = exp if exp is not None else inp
     if p:
-        exp = '<p>%s</p>' % exp
+        exp = f'<p>{exp}</p>'
     assert_equal(html_format(inp), exp)
 
 
@@ -52,12 +52,7 @@ class TestEntities(unittest.TestCase):
 
     def test_entities(self):
         for char, entity in [('<','&lt;'), ('>','&gt;'), ('&','&amp;')]:
-            for inp, exp in [(char, entity),
-                             ('text %s' % char, 'text %s' % entity),
-                             ('-%s-%s-' % (char, char),
-                              '-%s-%s-' % (entity, entity)),
-                             ('"%s&%s"' % (char, char),
-                              '"%s&amp;%s"' % (entity, entity))]:
+            for inp, exp in [(char, entity), (f'text {char}', f'text {entity}'), (f'-{char}-{char}-', f'-{entity}-{entity}-'), (f'"{char}&{char}"', f'"{entity}&amp;{entity}"')]:
                 assert_escape_and_format(inp, exp)
 
 
@@ -71,11 +66,11 @@ class TestUrlsToLinks(unittest.TestCase):
     def test_simple_urls(self):
         for link in ['http://robot.fi', 'https://r.fi/', 'FTP://x.y.z/p/f.txt',
                      'a23456://link', 'file:///c:/temp/xxx.yyy']:
-            exp = '<a href="%s">%s</a>' % (link, link)
+            exp = f'<a href="{link}">{link}</a>'
             assert_escape_and_format(link, exp)
             for end in [',', '.', ';', ':', '!', '?', '...', '!?!', ' hello' ]:
                 assert_escape_and_format(link+end, exp+end)
-                assert_escape_and_format('xxx '+link+end, 'xxx '+exp+end)
+                assert_escape_and_format(f'xxx {link}{end}', f'xxx {exp}{end}')
             for start, end in [('(',')'), ('[',']'), ('"','"'), ("'","'")]:
                 assert_escape_and_format(start+link+end, start+exp+end)
 
@@ -106,9 +101,9 @@ class TestUrlsToLinks(unittest.TestCase):
         link = '(<a href="%s">%s</a>)'
         img = '(<img src="%s" title="%s">)'
         for ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg']:
-            url = 'foo://bar/zap.%s' % ext
+            url = f'foo://bar/zap.{ext}'
             uprl = url.upper()
-            inp = '(%s)' % url
+            inp = f'({url})'
             assert_escape_and_format(inp, link % (url, url), img % (url, url))
             assert_escape_and_format(inp.upper(), link % (uprl, uprl),
                                     img % (uprl, uprl))
@@ -329,63 +324,63 @@ class TestHtmlFormatCustomLinks(unittest.TestCase):
     def test_text_with_image(self):
         for ext in self.image_extensions:
             assert_format(
-                '[link|img.%s]' % ext,
-                '<a href="link"><img src="img.%s" title="link"></a>' % ext,
-                p=True
+                f'[link|img.{ext}]',
+                f'<a href="link"><img src="img.{ext}" title="link"></a>',
+                p=True,
             )
 
     def test_image_with_text(self):
         for ext in self.image_extensions:
-            img = 'doc/images/robot.%s' % ext
+            img = f'doc/images/robot.{ext}'
             assert_format(
-                'Robot [%s|robot]!' % img,
-                'Robot <img src="%s" title="robot">!' % img,
-                p=True
+                f'Robot [{img}|robot]!',
+                f'Robot <img src="{img}" title="robot">!',
+                p=True,
             )
             assert_format(
-                'Robot [%s|]!' % img,
-                'Robot <img src="%s" title="%s">!' % (img, img),
-                p=True
+                f'Robot [{img}|]!',
+                f'Robot <img src="{img}" title="{img}">!',
+                p=True,
             )
 
     def test_image_with_image(self):
         for ext in self.image_extensions:
             assert_format(
-                '[X.%s|Y.%s]' % (ext, ext),
-                '<a href="X.%s"><img src="Y.%s" title="X.%s"></a>' % ((ext,)*3),
-                p=True
+                f'[X.{ext}|Y.{ext}]',
+                '<a href="X.%s"><img src="Y.%s" title="X.%s"></a>' % ((ext,) * 3),
+                p=True,
             )
 
     def test_text_with_data_uri_image(self):
         uri = 'data:image/png;base64,oooxxx='
         assert_format(
-            '[robot.html|%s]' % uri,
-            '<a href="robot.html"><img src="%s" title="robot.html"></a>' % uri,
-            p=True
+            f'[robot.html|{uri}]',
+            f'<a href="robot.html"><img src="{uri}" title="robot.html"></a>',
+            p=True,
         )
 
     def test_data_uri_image_with_text(self):
         uri = 'data:image/png;base64,oooxxx='
         assert_format(
-            '[%s|Robot rocks!]' % uri,
-            '<img src="%s" title="Robot rocks!">' % uri,
-            p=True
+            f'[{uri}|Robot rocks!]',
+            f'<img src="{uri}" title="Robot rocks!">',
+            p=True,
         )
 
     def test_image_with_data_uri_image(self):
         uri = 'data:image/png;base64,oooxxx='
         assert_format(
-            '[image.jpg|%s]' % uri,
-            '<a href="image.jpg"><img src="%s" title="image.jpg"></a>' % uri,
-            p=True
+            f'[image.jpg|{uri}]',
+            f'<a href="image.jpg"><img src="{uri}" title="image.jpg"></a>',
+            p=True,
         )
 
     def test_data_uri_image_with_data_uri_image(self):
         uri = 'data:image/png;base64,oooxxx='
         assert_format(
-            '[%s|%s]' % (uri, uri),
-            '<a href="%s"><img src="%s" title="%s"></a>' % (uri, uri, uri),
-            p=True
+            f'[{uri}|{uri}]',
+            f'<a href="{uri}"><img src="{uri}" title="{uri}"></a>',
+            p=True,
         )
 
     def test_link_is_required(self):

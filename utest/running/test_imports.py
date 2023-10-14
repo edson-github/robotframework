@@ -35,8 +35,7 @@ class TestImports(unittest.TestCase):
         except AssertionError as e:
             # Something failed. Let's print more info.
             full_msg = ["Expected and obtained don't match. Test messages:"]
-            for test in result.tests:
-                full_msg.append('%s: %s' % (test, test.message))
+            full_msg.extend(f'{test}: {test.message}' for test in result.tests)
             raise AssertionError('\n'.join(full_msg)) from e
 
     def test_create(self):

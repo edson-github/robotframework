@@ -222,14 +222,15 @@ class ArgDocDynamicLibrary:
                ('Many Args', ['*args'], None),
                ('No Arg Spec', None, None),
                ('Multiline', None, 'Multiline\nshort doc!\n\nBody\nhere.')]
-        self._keywords = dict((name, _KeywordInfo(name, argspec, doc))
-                              for name, argspec, doc in kws)
+        self._keywords = {
+            name: _KeywordInfo(name, argspec, doc) for name, argspec, doc in kws
+        }
 
     def get_keyword_names(self):
         return sorted(self._keywords)
 
     def run_keyword(self, name, args):
-        print('*INFO* Executed keyword "%s" with arguments %s.' % (name, args))
+        print(f'*INFO* Executed keyword "{name}" with arguments {args}.')
 
     def get_keyword_documentation(self, name):
         return self._keywords[name].doc
@@ -249,7 +250,7 @@ class ArgDocDynamicLibraryWithKwargsSupport(ArgDocDynamicLibrary):
     def run_keyword(self, name, args, kwargs={}):
         argstr = ' '.join([str(a) for a in args] +
                           ['%s:%s' % kv for kv in sorted(kwargs.items())])
-        print('*INFO* Executed keyword %s with arguments %s' % (name, argstr))
+        print(f'*INFO* Executed keyword {name} with arguments {argstr}')
 
 
 class DynamicWithSource:

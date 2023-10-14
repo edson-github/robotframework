@@ -42,7 +42,7 @@ class ModelModifier(SuiteVisitor):
 
     def start_for_iteration(self, iteration):
         for name, value in iteration.assign.items():
-            iteration.assign[name] = value + ' (modified)'
+            iteration.assign[name] = f'{value} (modified)'
         iteration.assign['${x}'] = 'new'
 
     def start_if_branch(self, branch):

@@ -31,7 +31,7 @@ class _StopSignalMonitor:
 
     def __call__(self, signum, frame):
         self._signal_count += 1
-        LOGGER.info('Received signal: %s.' % signum)
+        LOGGER.info(f'Received signal: {signum}.')
         if self._signal_count > 1:
             sys.__stderr__.write('Execution forcefully stopped.\n')
             raise SystemExit()

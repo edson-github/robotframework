@@ -14,7 +14,7 @@ class ListenAll:
         return os.path.join(os.getenv('TEMPDIR'), 'listen_all.txt')
 
     def start_suite(self, name, attrs):
-        metastr = ' '.join('%s: %s' % (k, v) for k, v in attrs['metadata'].items())
+        metastr = ' '.join(f'{k}: {v}' for k, v in attrs['metadata'].items())
         self.outfile.write("SUITE START: %s (%s) '%s' [%s]\n"
                            % (name, attrs['id'], attrs['doc'], metastr))
         self.start_attrs.append(attrs)
@@ -26,15 +26,9 @@ class ListenAll:
         self.start_attrs.append(attrs)
 
     def start_keyword(self, name, attrs):
-        if attrs['assign']:
-            assign = '%s = ' % ', '.join(attrs['assign'])
-        else:
-            assign = ''
-        name = name + ' ' if name else ''
-        if attrs['args']:
-            args = '%s ' % [str(a) for a in attrs['args']]
-        else:
-            args = ''
+        assign = f"{', '.join(attrs['assign'])} = " if attrs['assign'] else ''
+        name = f'{name} ' if name else ''
+        args = f"{[str(a) for a in attrs['args']]} " if attrs['args'] else ''
         self.outfile.write("%s START: %s%s%s(line %d)\n"
                            % (attrs['type'], assign, name, args, attrs['lineno']))
         self.start_attrs.append(attrs)
@@ -51,11 +45,11 @@ class ListenAll:
 
     def _check_message_validity(self, message):
         if message['html'] not in ['yes', 'no']:
-            self.outfile.write('Log message has invalid `html` attribute %s' %
-                               message['html'])
+            self.outfile.write(
+                f"Log message has invalid `html` attribute {message['html']}"
+            )
         if not message['timestamp'].startswith(str(time.localtime()[0])):
-            self.outfile.write('Log message has invalid timestamp %s' %
-                               message['timestamp'])
+            self.outfile.write(f"Log message has invalid timestamp {message['timestamp']}")
         return message['message'], message['level']
 
     def end_keyword(self, name, attrs):

@@ -32,7 +32,7 @@ def remap(model, strings):
     elif isinstance(model, tuple):
         return tuple(remap(item, strings) for item in model)
     else:
-        raise AssertionError("Item '%s' has invalid type '%s'" % (model, type(model)))
+        raise AssertionError(f"Item '{model}' has invalid type '{type(model)}'")
 
 
 class TestBuildTestSuite(unittest.TestCase):
@@ -319,8 +319,10 @@ class TestSplitting(unittest.TestCase):
         return self._to_list(model), context
 
     def _to_list(self, model):
-        return list(self._to_list(item) if isinstance(item, tuple) else item
-                    for item in model)
+        return [
+            self._to_list(item) if isinstance(item, tuple) else item
+            for item in model
+        ]
 
     def test_suite_keywords(self):
         suite = self._get_suite_with_keywords()

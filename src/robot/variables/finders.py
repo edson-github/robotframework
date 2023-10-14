@@ -53,7 +53,7 @@ class VariableFinder:
             return variable
         match = search_variable(variable)
         if not match.is_variable() or match.items:
-            raise DataError("Invalid variable name '%s'." % variable)
+            raise DataError(f"Invalid variable name '{variable}'.")
         return match
 
 
@@ -107,7 +107,7 @@ class InlinePythonFinder:
         try:
             return evaluate_expression(base[1:-1].strip(), self._variables)
         except DataError as err:
-            raise VariableError("Resolving variable '%s' failed: %s" % (name, err))
+            raise VariableError(f"Resolving variable '{name}' failed: {err}")
 
 
 class ExtendedFinder:
@@ -128,13 +128,13 @@ class ExtendedFinder:
         try:
             variable = self._find_variable('${%s}' % base_name)
         except DataError as err:
-            raise VariableError("Resolving variable '%s' failed: %s"
-                                % (name, err.message))
+            raise VariableError(f"Resolving variable '{name}' failed: {err.message}")
         try:
-            return eval('_BASE_VAR_' + extended, {'_BASE_VAR_': variable})
+            return eval(f'_BASE_VAR_{extended}', {'_BASE_VAR_': variable})
         except:
-            raise VariableError("Resolving variable '%s' failed: %s"
-                                % (name, get_error_message()))
+            raise VariableError(
+                f"Resolving variable '{name}' failed: {get_error_message()}"
+            )
 
 
 class EnvironmentFinder:
@@ -147,5 +147,6 @@ class EnvironmentFinder:
             return value
         if has_default:
             return default_value
-        variable_not_found(name, get_env_vars(),
-                           "Environment variable '%s' not found." % name)
+        variable_not_found(
+            name, get_env_vars(), f"Environment variable '{name}' not found."
+        )

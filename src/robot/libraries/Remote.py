@@ -45,7 +45,7 @@ class Remote:
         the keyword.
         """
         if '://' not in uri:
-            uri = 'http://' + uri
+            uri = f'http://{uri}'
         if timeout:
             timeout = timestr_to_secs(timeout)
         self._uri = uri
@@ -55,8 +55,11 @@ class Remote:
 
     def get_keyword_names(self):
         if self._is_lib_info_available():
-            return [name for name in self._lib_info
-                    if not (name[:2] == '__' and name[-2:] == '__')]
+            return [
+                name
+                for name in self._lib_info
+                if name[:2] != '__' or name[-2:] != '__'
+            ]
         try:
             return self._client.get_keyword_names()
         except TypeError as error:
@@ -124,9 +127,7 @@ class ArgumentCoercer:
         return is_number(arg) or is_bytes(arg) or isinstance(arg, datetime)
 
     def _handle_string(self, arg):
-        if self.binary.search(arg):
-            return self._handle_binary_in_string(arg)
-        return arg
+        return self._handle_binary_in_string(arg) if self.binary.search(arg) else arg
 
     def _handle_binary_in_string(self, arg):
         try:
@@ -190,9 +191,7 @@ class RemoteResult:
     def _convert(self, value):
         if is_dict_like(value):
             return DotDict((k, self._convert(v)) for k, v in value.items())
-        if is_list_like(value):
-            return [self._convert(v) for v in value]
-        return value
+        return [self._convert(v) for v in value] if is_list_like(value) else value
 
 
 class XmlRpcRemoteClient:

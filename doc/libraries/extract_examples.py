@@ -37,7 +37,7 @@ def read_tests(path):
             if test:
                 print('\n', test)
                 test = None
-            print('|    ' + line)
+            print(f'|    {line}')
 
 
 if __name__ == '__main__':

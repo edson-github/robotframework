@@ -24,8 +24,6 @@ class DynamicKwOnlyArgs:
             self.args = args
             self.kwargs = kwargs
         elif self.args != args:
-            raise AssertionError("Expected arguments %s, got %s."
-                                 % (args, self.args))
+            raise AssertionError(f"Expected arguments {args}, got {self.args}.")
         elif self.kwargs != kwargs:
-            raise AssertionError("Expected kwargs %s, got %s."
-                                 % (kwargs, self.kwargs))
+            raise AssertionError(f"Expected kwargs {kwargs}, got {self.kwargs}.")

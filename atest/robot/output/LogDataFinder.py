@@ -32,7 +32,7 @@ def _get_output_line(path, prefix):
     with open(path, encoding='UTF-8') as file:
         for line in file:
             if line.startswith(prefix):
-                logger.info('Found: %s' % line)
+                logger.info(f'Found: {line}')
                 return line[len(prefix):-2]
 
 

@@ -30,8 +30,7 @@ class ListenerMethods:
 
     def _register_methods(self, method_name, listeners):
         for listener in listeners:
-            method = getattr(listener, method_name)
-            if method:
+            if method := getattr(listener, method_name):
                 self._methods.append(ListenerMethod(method, listener))
 
     def __call__(self, *args):
@@ -59,8 +58,7 @@ class LibraryListenerMethods:
     def register(self, listeners, library):
         methods = self._method_stack[-1]
         for listener in listeners:
-            method = getattr(listener, self._method_name)
-            if method:
+            if method := getattr(listener, self._method_name):
                 info = ListenerMethod(method, listener, library)
                 methods.append(info)
 
@@ -69,19 +67,16 @@ class LibraryListenerMethods:
         self._method_stack[-1] = methods
 
     def __call__(self, *args, **conf):
-        methods = self._get_methods(**conf)
-        if methods:
+        if methods := self._get_methods(**conf):
             args = ListenerArguments.by_method_name(self._method_name, args)
             for method in methods:
                 method(args.get_arguments(method.version))
 
     def _get_methods(self, library=None):
-        if not (self._method_stack and self._method_stack[-1]):
+        if not self._method_stack or not self._method_stack[-1]:
             return []
         methods = self._method_stack[-1]
-        if library:
-            return [m for m in methods if m.library is library]
-        return methods
+        return [m for m in methods if m.library is library] if library else methods
 
 
 class ListenerMethod:
@@ -106,8 +101,9 @@ class ListenerMethod:
             raise
         except:
             message, details = get_error_details()
-            LOGGER.error("Calling method '%s' of listener '%s' failed: %s"
-                         % (self.method.__name__, self.listener_name, message))
+            LOGGER.error(
+                f"Calling method '{self.method.__name__}' of listener '{self.listener_name}' failed: {message}"
+            )
             LOGGER.info("Details:\n%s" % details)
         finally:
             ListenerMethod.called = False

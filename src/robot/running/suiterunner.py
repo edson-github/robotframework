@@ -105,8 +105,7 @@ class SuiteRunner(SuiteVisitor):
         self._context.report_suite_status(self._suite.status,
                                           self._suite.full_message)
         with self._context.suite_teardown():
-            failure = self._run_teardown(suite, self._suite_status)
-            if failure:
+            if failure := self._run_teardown(suite, self._suite_status):
                 if failure.skip:
                     self._suite.suite_teardown_skipped(str(failure))
                 else:
@@ -204,10 +203,7 @@ class SuiteRunner(SuiteVisitor):
 
     def _run_setup(self, item, status, result=None, run=True):
         if run and status.passed:
-            if item.has_setup:
-                exception = self._run_setup_or_teardown(item.setup)
-            else:
-                exception = None
+            exception = self._run_setup_or_teardown(item.setup) if item.has_setup else None
             status.setup_executed(exception)
             if result and isinstance(exception, PassExecution):
                 result.message = exception.message
@@ -235,9 +231,7 @@ class SuiteRunner(SuiteVisitor):
         try:
             name = self._variables.replace_string(data.name)
         except DataError as err:
-            if self._settings.dry_run:
-                return None
-            return ExecutionFailed(message=err.message)
+            return None if self._settings.dry_run else ExecutionFailed(message=err.message)
         if name.upper() in ('', 'NONE'):
             return None
         try:

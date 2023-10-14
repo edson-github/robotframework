@@ -64,12 +64,11 @@ class TestLanguage(unittest.TestCase):
                         f'Invalid docstring for {cls.name}. '
                         f'Expected only language name, got:\n{doc}'
                     )
-            else:
-                if not re.match(rf'{cls.name}\n\nNew in Robot Framework [\d.]+\.', doc):
-                    raise AssertionError(
-                        f'Invalid docstring for {cls.name}. '
-                        f'Expected language name and "New in" note, got:\n{doc}'
-                    )
+            elif not re.match(rf'{cls.name}\n\nNew in Robot Framework [\d.]+\.', doc):
+                raise AssertionError(
+                    f'Invalid docstring for {cls.name}. '
+                    f'Expected language name and "New in" note, got:\n{doc}'
+                )
 
     def test_code_and_name_of_Language_base_class_are_propertys(self):
         assert isinstance(Language.code, property)

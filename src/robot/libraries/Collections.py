@@ -273,9 +273,7 @@ class _List:
         The given list is never altered by this keyword.
         """
         self._validate_list(list_)
-        if deepcopy:
-            return copy.deepcopy(list_)
-        return list_[:]
+        return copy.deepcopy(list_) if deepcopy else list_[:]
 
     def reverse_list(self, list_):
         """Reverses the given list in place.
@@ -411,7 +409,7 @@ class _List:
         if not names:
             return {}
         if is_dict_like(names):
-            return dict((int(index), names[index]) for index in names)
+            return {int(index): names[index] for index in names}
         return dict(zip(range(list_length), names))
 
     def _yield_list_diffs(self, list1, list2, names):
@@ -589,9 +587,7 @@ class _Dictionary:
         The given dictionary is never altered by this keyword.
         """
         self._validate_dictionary(dictionary)
-        if deepcopy:
-            return copy.deepcopy(dictionary)
-        return dictionary.copy()
+        return copy.deepcopy(dictionary) if deepcopy else dictionary.copy()
 
     def get_dictionary_keys(self, dictionary, sort_keys=True):
         """Returns keys of the given ``dictionary`` as a list.
@@ -832,12 +828,10 @@ class _Dictionary:
     def _keys_should_be_equal(self, dict1, dict2, msg, values):
         keys1 = self.get_dictionary_keys(dict1)
         keys2 = self.get_dictionary_keys(dict2)
-        miss1 = ', '.join(str(k) for k in keys2 if k not in dict1)
-        miss2 = ', '.join(str(k) for k in keys1 if k not in dict2)
         error = []
-        if miss1:
+        if miss1 := ', '.join(str(k) for k in keys2 if k not in dict1):
             error += [f'Following keys missing from first dictionary: {miss1}']
-        if miss2:
+        if miss2 := ', '.join(str(k) for k in keys1 if k not in dict2):
             error += [f'Following keys missing from second dictionary: {miss2}']
         _verify_condition(not error, '\n'.join(error), msg, values)
         return keys1

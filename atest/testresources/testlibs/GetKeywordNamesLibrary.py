@@ -8,7 +8,7 @@ def passing_handler(*args):
 
 
 def failing_handler(*args):
-    raise AssertionError('Failure: %s' % ' '.join(args) if args else 'Failure')
+    raise AssertionError(f"Failure: {' '.join(args)}" if args else 'Failure')
 
 
 class GetKeywordNamesLibrary:
@@ -32,7 +32,7 @@ class GetKeywordNamesLibrary:
             return failing_handler
         if name == 'Unexpected error getting attribute':
             raise TypeError('Oooops!')
-        raise AttributeError("Non-existing attribute '%s'" % name)
+        raise AttributeError(f"Non-existing attribute '{name}'")
 
     def keyword_in_library_itself(self):
         msg = 'No need for __getattr__ here!!'

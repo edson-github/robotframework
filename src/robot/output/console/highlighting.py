@@ -182,9 +182,7 @@ class DosHighlighter:
     def _get_colors(self):
         csbi = _CONSOLE_SCREEN_BUFFER_INFO()
         ok = windll.kernel32.GetConsoleScreenBufferInfo(self._handle, byref(csbi))
-        if not ok:  # Call failed, return default console colors (gray on black)
-            return self._FOREGROUND_GREY
-        return csbi.wAttributes
+        return self._FOREGROUND_GREY if not ok else csbi.wAttributes
 
     def _set_foreground_colors(self, colors):
         self._set_colors(colors | self._FOREGROUND_INTENSITY | self._background)

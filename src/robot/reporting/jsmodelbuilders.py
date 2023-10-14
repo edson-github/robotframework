@@ -71,7 +71,7 @@ class Builder:
     def _build_body(self, body, split=False):
         splitting = self._context.start_splitting_if_needed(split)
         # tuple([<listcomp>]) is faster than tuple(<genex>) with short lists.
-        model = tuple([self._build_body_item(item) for item in body])
+        model = tuple(self._build_body_item(item) for item in body)
         return model if not splitting else self._context.end_splitting(model)
 
     def _build_body_item(self, item):

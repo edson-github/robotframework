@@ -142,7 +142,7 @@ class VariableMatch:
     def __str__(self):
         if not self:
             return '<no match>'
-        items = ''.join('[%s]' % i for i in self.items) if self.items else ''
+        items = ''.join(f'[{i}]' for i in self.items) if self.items else ''
         return '%s{%s}%s' % (self.identifier, self.base, items)
 
 

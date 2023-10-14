@@ -22,4 +22,4 @@ def print_console():
 
 def print_with_all_levels():
     for level in 'TRACE DEBUG INFO CONSOLE HTML WARN ERROR'.split():
-        print('*%s* %s message' % (level, level.title()))
+        print(f'*{level}* {level.title()} message')

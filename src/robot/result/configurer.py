@@ -41,9 +41,7 @@ class SuiteConfigurer(model.SuiteConfigurer):
     def _get_remove_keywords(self, value):
         if value is None:
             return []
-        if is_string(value):
-            return [value]
-        return value
+        return [value] if is_string(value) else value
 
     def _to_datetime(self, timestamp):
         if not timestamp:

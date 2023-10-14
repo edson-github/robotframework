@@ -10,5 +10,6 @@ class Embedded:
     def called_times(self, times):
         self.called += 1
         if self.called != times:
-            raise AssertionError('Called %s time(s), expected %s time(s).'
-                                 % (self.called, times))
+            raise AssertionError(
+                f'Called {self.called} time(s), expected {times} time(s).'
+            )

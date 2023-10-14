@@ -67,20 +67,20 @@ class TestSuiteStatus(unittest.TestCase):
 
     def test_suite_status_is_pass_if_only_passed_tests(self):
         suite = TestSuite()
-        for i in range(10):
+        for _ in range(10):
             suite.tests.create(status='PASS')
         assert_equal(suite.status, 'PASS')
 
     def test_suite_status_is_pass_if_passed_and_skipped(self):
         suite = TestSuite()
-        for i in range(5):
+        for _ in range(5):
             suite.tests.create(status='PASS')
             suite.tests.create(status='SKIP')
         assert_equal(suite.status, 'PASS')
 
     def test_suite_status_is_skip_if_only_skipped_tests(self):
         suite = TestSuite()
-        for i in range(10):
+        for _ in range(10):
             suite.tests.create(status='SKIP')
         assert_equal(suite.status, 'SKIP')
         assert_true(suite.skipped)

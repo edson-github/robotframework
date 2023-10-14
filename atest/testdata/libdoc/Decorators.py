@@ -19,7 +19,7 @@ def decorator_with_wraps(func):
 
 @decorator
 def keyword_using_decorator(args, are_not, preserved=True):
-    return '%s %s %s' % (args, are_not, preserved)
+    return f'{args} {are_not} {preserved}'
 
 
 @decorator_with_wraps

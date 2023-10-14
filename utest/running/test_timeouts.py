@@ -32,8 +32,8 @@ class TestInit(unittest.TestCase):
             self._verify_tout(TestTimeout(tout_str), exp_str, exp_secs)
 
     def test_invalid_timeout_string(self):
+        err = "Setting test timeout failed: Invalid time string '%s'."
         for inv in ['invalid', '1s 1']:
-            err = "Setting test timeout failed: Invalid time string '%s'."
             self._verify_tout(TestTimeout(inv), str=inv, secs=0.000001, err=err % inv)
 
     def _verify_tout(self, tout, str='', secs=-1, err=None):

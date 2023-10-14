@@ -49,8 +49,9 @@ class _DynamicMethod:
         try:
             return self._handle_return_value(self.method(*args))
         except:
-            raise DataError("Calling dynamic method '%s' failed: %s"
-                            % (self.name, get_error_message()))
+            raise DataError(
+                f"Calling dynamic method '{self.name}' failed: {get_error_message()}"
+            )
 
     def _handle_return_value(self, value):
         raise NotImplementedError
@@ -65,8 +66,9 @@ class _DynamicMethod:
         if allow_none and value is None:
             return value
         or_tuple = ' or a non-empty tuple' if allow_tuple else ''
-        raise DataError('Return value must be a string%s, got %s.'
-                        % (or_tuple, type_name(value)))
+        raise DataError(
+            f'Return value must be a string{or_tuple}, got {type_name(value)}.'
+        )
 
     def _to_list(self, value):
         if value is None:
@@ -80,8 +82,9 @@ class _DynamicMethod:
             return [self._to_string(item, allow_tuples)
                     for item in self._to_list(value)]
         except DataError:
-            raise DataError('Return value must be a list of strings%s.'
-                            % (' or non-empty tuples' if allow_tuples else ''))
+            raise DataError(
+                f"Return value must be a list of strings{' or non-empty tuples' if allow_tuples else ''}."
+            )
 
     def __bool__(self):
         return self.method is not no_dynamic_method
@@ -127,9 +130,7 @@ class GetKeywordArguments(_DynamicMethod):
 
     def _handle_return_value(self, value):
         if value is None:
-            if self._supports_kwargs:
-                return ['*varargs', '**kwargs']
-            return ['*varargs']
+            return ['*varargs', '**kwargs'] if self._supports_kwargs else ['*varargs']
         return self._to_list_of_strings(value, allow_tuples=True)
 
 

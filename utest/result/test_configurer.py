@@ -226,7 +226,7 @@ class TestRemoveKeywords(unittest.TestCase):
         t2 = suite.tests.create(status='FAIL')
         t2.body.create_keyword().body.create_message()
         iteration = t2.body.create_for().body.create_iteration()
-        for i in range(10):
+        for _ in range(10):
             iteration.body.create_keyword(status='PASS')
         self._remove(['passed', 'for'], suite)
         assert_equal(len(t1.body[0].messages), 0)

@@ -30,4 +30,4 @@ def LibdocWriter(format=None, theme=None):
         return LibdocXmlWriter()
     if format == 'JSON':
         return LibdocJsonWriter()
-    raise DataError("Invalid format '%s'." % format)
+    raise DataError(f"Invalid format '{format}'.")

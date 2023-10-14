@@ -145,8 +145,7 @@ class _BaseSettings:
     def _process_doc(self, value):
         if isinstance(value, Path) or (os.path.isfile(value) and value.strip() == value):
             try:
-                with open(value) as f:
-                    value = f.read()
+                value = Path(value).read_text()
             except (OSError, IOError) as err:
                 self._raise_invalid('Doc', f"Reading documentation from '{value}' "
                                            f"failed: {err}")
@@ -253,9 +252,7 @@ class _BaseSettings:
         return name, self._process_doc(value)
 
     def _split_from_colon(self, value):
-        if ':' in value:
-            return value.split(':', 1)
-        return value, ''
+        return value.split(':', 1) if ':' in value else (value, '')
 
     def _process_tagdoc(self, value):
         return self._split_from_colon(value)
@@ -265,9 +262,7 @@ class _BaseSettings:
             self._raise_invalid('ReportBackground', f"Expected format 'pass:fail:skip' "
                                                     f"or 'pass:fail', got '{colors}'.")
         colors = colors.split(':')
-        if len(colors) == 2:
-            return colors[0], colors[1], '#fed84f'
-        return tuple(colors)
+        return (colors[0], colors[1], '#fed84f') if len(colors) == 2 else tuple(colors)
 
     def _process_tag_stat_combine(self, pattern):
         if ':' in pattern:
@@ -558,9 +553,7 @@ class RobotSettings(_BaseSettings):
             rerun = gather_failed_suites(self['ReRunFailedSuites'], self['RunEmptySuite'])
         # `rerun` is None if `--rerunfailed(suites)` wasn't used and a list otherwise.
         # The list is empty all tests passed and running empty suite is allowed.
-        if rerun:
-            return names + rerun
-        return names or rerun
+        return names + rerun if rerun else names or rerun
 
     @property
     def randomize_seed(self):
@@ -618,9 +611,7 @@ class RobotSettings(_BaseSettings):
     def console_type(self):
         if self['ConsoleTypeQuiet']:
             return 'quiet'
-        if self['ConsoleTypeDotted']:
-            return 'dotted'
-        return self['ConsoleType']
+        return 'dotted' if self['ConsoleTypeDotted'] else self['ConsoleType']
 
     @property
     def console_width(self):

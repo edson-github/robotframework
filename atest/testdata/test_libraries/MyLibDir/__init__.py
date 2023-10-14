@@ -6,4 +6,4 @@ class MyLibDir:
         return ['Keyword In My Lib Dir']
     
     def run_keyword(self, name, args):
-        return "Executed keyword '%s' with args %s" % (name, utils.seq2str2(args))
+        return f"Executed keyword '{name}' with args {utils.seq2str2(args)}"

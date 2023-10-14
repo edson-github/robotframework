@@ -58,17 +58,14 @@ class VariableReplacer:
 
     def _replace_list(self, items, ignore_errors):
         for item in items:
-            for value in self._replace_list_item(item, ignore_errors):
-                yield value
+            yield from self._replace_list_item(item, ignore_errors)
 
     def _replace_list_item(self, item, ignore_errors):
         match = search_variable(item, ignore_errors=ignore_errors)
         if not match:
             return [unescape(match.string)]
         value = self.replace_scalar(match, ignore_errors)
-        if match.is_list_variable() and is_list_like(value):
-            return value
-        return [value]
+        return value if match.is_list_variable() and is_list_like(value) else [value]
 
     def replace_scalar(self, item, ignore_errors=False):
         """Replaces variables from a scalar item.
@@ -77,10 +74,10 @@ class VariableReplacer:
         its value is returned. Otherwise, possible variables are replaced with
         'replace_string'. Result may be any object.
         """
-        match = self._search_variable(item, ignore_errors=ignore_errors)
-        if not match:
+        if match := self._search_variable(item, ignore_errors=ignore_errors):
+            return self._replace_scalar(match, ignore_errors)
+        else:
             return unescape(match.string)
-        return self._replace_scalar(match, ignore_errors)
 
     def _search_variable(self, item, ignore_errors):
         if isinstance(item, VariableMatch):
@@ -98,10 +95,10 @@ class VariableReplacer:
         Input can also be an already found VariableMatch.
         """
         unescaper = custom_unescaper or unescape
-        match = self._search_variable(item, ignore_errors=ignore_errors)
-        if not match:
+        if match := self._search_variable(item, ignore_errors=ignore_errors):
+            return self._replace_string(match, unescaper, ignore_errors)
+        else:
             return safe_str(unescaper(match.string))
-        return self._replace_string(match, unescaper, ignore_errors)
 
     def _replace_string(self, match, unescaper, ignore_errors):
         parts = []

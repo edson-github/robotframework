@@ -7,11 +7,11 @@ def three_arguments(a, b, c, /):
 
 
 def with_normal(posonly, /, normal):
-    return posonly + '-' + normal
+    return f'{posonly}-{normal}'
 
 
 def defaults(required, optional='default', /):
-    return required + '-' + optional
+    return f'{required}-{optional}'
 
 
 def types(first: int, second: float, /):
@@ -19,4 +19,4 @@ def types(first: int, second: float, /):
 
 
 def kwargs(x, /, **y):
-    return '%s, %s' % (x, ', '.join('%s: %s' % item for item in y.items()))
+    return f"{x}, {', '.join('%s: %s' % item for item in y.items())}"

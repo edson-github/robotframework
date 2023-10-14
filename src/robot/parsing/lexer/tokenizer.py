@@ -41,7 +41,7 @@ class Tokenizer:
         tokens: 'list[Token]' = []
         append = tokens.append
         offset = 0
-        if line[:1] == '|' and line[:2].strip() == '|':
+        if line.startswith('|') and line[:2].strip() == '|':
             splitter = self._split_from_pipes
         else:
             splitter = self._split_from_spaces

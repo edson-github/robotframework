@@ -39,7 +39,7 @@ class Application:
 
     def execute_cli(self, cli_arguments, exit=True):
         with self._logger:
-            self._logger.info('%s %s' % (self._ap.name, self._ap.version))
+            self._logger.info(f'{self._ap.name} {self._ap.version}')
             options, arguments = self._parse_arguments(cli_arguments)
             rc = self._execute(arguments, options)
         if exit:
@@ -58,7 +58,7 @@ class Application:
         except DataError as err:
             self._report_error(err.message, help=True, exit=True)
         else:
-            self._logger.info('Arguments: %s' % ','.join(arguments))
+            self._logger.info(f"Arguments: {','.join(arguments)}")
             return options, arguments
 
     def parse_arguments(self, cli_args):
@@ -73,7 +73,7 @@ class Application:
 
     def execute(self, *arguments, **options):
         with self._logger:
-            self._logger.info('%s %s' % (self._ap.name, self._ap.version))
+            self._logger.info(f'{self._ap.name} {self._ap.version}')
             return self._execute(list(arguments), options)
 
     def _execute(self, arguments, options):
@@ -86,8 +86,9 @@ class Application:
                                       rc=STOPPED_BY_USER)
         except:
             error, details = get_error_details(exclude_robot_traces=False)
-            return self._report_error('Unexpected error: %s' % error,
-                                      details, rc=FRAMEWORK_ERROR)
+            return self._report_error(
+                f'Unexpected error: {error}', details, rc=FRAMEWORK_ERROR
+            )
         else:
             return rc or 0
 

@@ -336,18 +336,24 @@ class TestNonAsciiSpaces(unittest.TestCase):
     def test_as_separator_with_pipes(self):
         s = self.spaces
         ls = len(s)
-        verify_split(f'|{s}Hello{s}world{s}|{s}!\n|{s}|{s}!!!{s}|{s}\n',
-                     [(SEPA, '|'+s, 1, 0),
-                      (DATA, 'Hello'+s+'world', 1, 1+ls),
-                      (SEPA, s+'|'+s, 1, 1+ls+5+ls+5),
-                      (DATA, '!', 1, 1+ls+5+ls+5+ls+1+ls),
-                      (EOL, '\n', 1, 1+ls+5+ls+5+ls+1+ls+1)],
-                     [(SEPA, '|'+s, 2, 0),
-                      (DATA, '', 2, 1+ls),
-                      (SEPA, '|'+s, 2, 1+ls),
-                      (DATA, '!!!', 2, 1+ls+1+ls),
-                      (SEPA, s+'|', 2, 1+ls+1+ls+3),
-                      (EOL, s+'\n', 2, 1+ls+1+ls+3+ls+1)])
+        verify_split(
+            f'|{s}Hello{s}world{s}|{s}!\n|{s}|{s}!!!{s}|{s}\n',
+            [
+                (SEPA, f'|{s}', 1, 0),
+                (DATA, f'Hello{s}world', 1, 1 + ls),
+                (SEPA, f'{s}|{s}', 1, 1 + ls + 5 + ls + 5),
+                (DATA, '!', 1, 1 + ls + 5 + ls + 5 + ls + 1 + ls),
+                (EOL, '\n', 1, 1 + ls + 5 + ls + 5 + ls + 1 + ls + 1),
+            ],
+            [
+                (SEPA, f'|{s}', 2, 0),
+                (DATA, '', 2, 1 + ls),
+                (SEPA, f'|{s}', 2, 1 + ls),
+                (DATA, '!!!', 2, 1 + ls + 1 + ls),
+                (SEPA, f'{s}|', 2, 1 + ls + 1 + ls + 3),
+                (EOL, s + '\n', 2, 1 + ls + 1 + ls + 3 + ls + 1),
+            ],
+        )
 
     def test_in_data(self):
         d = self.data
@@ -367,12 +373,16 @@ class TestNonAsciiSpaces(unittest.TestCase):
         s = self.spaces
         ld = len(d)
         ls = len(s)
-        verify_split(f'|{s}{d}{s}|{s}{d}',
-                     [(SEPA, '|'+s, 1, 0),
-                      (DATA, d, 1, 1+ls),
-                      (SEPA, s+'|'+s, 1, 1+ls+ld),
-                      (DATA, d, 1, 1+ls+ld+ls+1+ls),
-                      (EOL, '', 1, 1+ls+ld+ls+1+ls+ld)])
+        verify_split(
+            f'|{s}{d}{s}|{s}{d}',
+            [
+                (SEPA, f'|{s}', 1, 0),
+                (DATA, d, 1, 1 + ls),
+                (SEPA, f'{s}|{s}', 1, 1 + ls + ld),
+                (DATA, d, 1, 1 + ls + ld + ls + 1 + ls),
+                (EOL, '', 1, 1 + ls + ld + ls + 1 + ls + ld),
+            ],
+        )
 
 
 class TestContinuation(unittest.TestCase):

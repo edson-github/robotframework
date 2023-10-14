@@ -452,10 +452,14 @@ class ValidationContext:
 
     @property
     def tasks(self) -> bool:
-        for parent in self.blocks:
-            if isinstance(parent, TestCaseSection):
-                return parent.tasks
-        return False
+        return next(
+            (
+                parent.tasks
+                for parent in self.blocks
+                if isinstance(parent, TestCaseSection)
+            ),
+            False,
+        )
 
     @property
     def in_keyword(self) -> bool:

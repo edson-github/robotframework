@@ -108,8 +108,7 @@ def _statements_to_model(statements: Iterator[Statement], source: Source) -> Fil
     for statement in statements:
         while not stack[-1].handles(statement):
             stack.pop()
-        parser = stack[-1].parse(statement)
-        if parser:
+        if parser := stack[-1].parse(statement):
             stack.append(parser)
     return root.model
 
@@ -126,6 +125,5 @@ class ConfigParser(ModelVisitor):
             cls(model).visit(model.sections[0])
 
     def visit_Config(self, node: Config):
-        language = node.language
-        if language:
+        if language := node.language:
             self.model.languages.append(language.code)

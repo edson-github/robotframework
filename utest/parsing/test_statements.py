@@ -20,10 +20,14 @@ def assert_created_statement(tokens, base_class, **params):
         statement,
         Statement.from_tokens(tokens)
     )
-    if len(set(id(t) for t in statement.tokens)) != len(tokens):
-        lines = '\n'.join(f'{i:18}{t}' for i, t in
-                          [('ID', 'TOKEN')] +
-                          [(str(id(t)), repr(t)) for t in statement.tokens])
+    if len({id(t) for t in statement.tokens}) != len(tokens):
+        lines = '\n'.join(
+            f'{i:18}{t}'
+            for i, t in (
+                [('ID', 'TOKEN')]
+                + [(id(t), repr(t)) for t in statement.tokens]
+            )
+        )
         raise AssertionError(f'Tokens should not be reused!\n\n{lines}')
     return statement
 
@@ -91,10 +95,7 @@ class TestCreateStatementsFromParams(unittest.TestCase):
             Token.COMMENT_HEADER: 'Comments'
         }
         for token_type, name in headers.items():
-            tokens = [
-                Token(token_type, '*** %s ***' % name),
-                Token(Token.EOL, '\n')
-            ]
+            tokens = [Token(token_type, f'*** {name} ***'), Token(Token.EOL, '\n')]
             assert_created_statement(
                 tokens,
                 SectionHeader,
@@ -107,10 +108,7 @@ class TestCreateStatementsFromParams(unittest.TestCase):
                 name=name
             )
             assert_created_statement(
-                tokens,
-                SectionHeader,
-                type=token_type,
-                name='*** %s ***' % name
+                tokens, SectionHeader, type=token_type, name=f'*** {name} ***'
             )
 
     def test_SuiteSetup(self):

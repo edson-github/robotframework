@@ -54,8 +54,7 @@ class BlockParser(Parser, ABC):
         return statement.type not in self.unhandled_tokens
 
     def parse(self, statement: Statement) -> 'BlockParser|None':
-        parser_class = self.parsers.get(statement.type)
-        if parser_class:
+        if parser_class := self.parsers.get(statement.type):
             model_class = parser_class.__annotations__['model']
             parser = parser_class(model_class(statement))
             self.model.body.append(parser.model)

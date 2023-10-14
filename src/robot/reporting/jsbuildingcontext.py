@@ -43,9 +43,7 @@ class JsBuildingContext:
         # log_path can be a custom object in unit tests
         if isinstance(log_path, Path):
             return log_path.parent
-        if isinstance(log_path, str):
-            return Path(log_path).parent
-        return None
+        return Path(log_path).parent if isinstance(log_path, str) else None
 
     def string(self, string, escape=True, attr=False):
         if not string:

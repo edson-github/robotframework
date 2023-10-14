@@ -157,9 +157,9 @@ class ArgInfo:
             return '*'
         ret = self.name
         if self.kind == self.VAR_POSITIONAL:
-            ret = '*' + ret
+            ret = f'*{ret}'
         elif self.kind == self.VAR_NAMED:
-            ret = '**' + ret
+            ret = f'**{ret}'
         if self.type:
             ret = f'{ret}: {self.type}'
             default_sep = ' = '

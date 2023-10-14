@@ -35,27 +35,33 @@ class FileLogger(AbstractLogger, LoggerApi):
             self._writer.write(entry)
 
     def start_suite(self, data, result):
-        self.info("Started suite '%s'." % result.name)
+        self.info(f"Started suite '{result.name}'.")
 
     def end_suite(self, data, result):
-        self.info("Ended suite '%s'." % result.name)
+        self.info(f"Ended suite '{result.name}'.")
 
     def start_test(self, data, result):
-        self.info("Started test '%s'." % result.name)
+        self.info(f"Started test '{result.name}'.")
 
     def end_test(self, data, result):
-        self.info("Ended test '%s'." % result.name)
+        self.info(f"Ended test '{result.name}'.")
 
     def start_body_item(self, data, result):
-        self.debug(lambda: "Started keyword '%s'." % result.name
-                   if result.type in result.KEYWORD_TYPES else result._log_name)
+        self.debug(
+            lambda: f"Started keyword '{result.name}'."
+            if result.type in result.KEYWORD_TYPES
+            else result._log_name
+        )
 
     def end_body_item(self, data, result):
-        self.debug(lambda: "Ended keyword '%s'." % result.name
-                   if result.type in result.KEYWORD_TYPES else result._log_name)
+        self.debug(
+            lambda: f"Ended keyword '{result.name}'."
+            if result.type in result.KEYWORD_TYPES
+            else result._log_name
+        )
 
     def output_file(self, name, path):
-        self.info('%s: %s' % (name, path))
+        self.info(f'{name}: {path}')
 
     def close(self):
         self._writer.close()

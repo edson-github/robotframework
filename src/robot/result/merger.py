@@ -55,10 +55,7 @@ class Merger(SuiteVisitor):
         return root
 
     def _find(self, items, name):
-        for item in items:
-            if item.name == name:
-                return item
-        return None
+        return next((item for item in items if item.name == name), None)
 
     def end_suite(self, suite):
         self.current = self.current.parent

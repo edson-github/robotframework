@@ -8,7 +8,7 @@ class listenerlibrary3:
         self.ROBOT_LIBRARY_LISTENER = self
 
     def start_suite(self, data, result):
-        result.doc = (result.doc + ' [start suite]').strip()
+        result.doc = f'{result.doc} [start suite]'.strip()
         result.metadata['suite'] = '[start]'
         result.metadata['tests'] = ''
         assert len(data.tests) == 2
@@ -25,7 +25,7 @@ class listenerlibrary3:
         result.metadata['suite'] += ' [end]'
 
     def start_test(self, data, result):
-        result.doc = (result.doc + ' [start test]').strip()
+        result.doc = f'{result.doc} [start test]'.strip()
         result.tags.add('[start]')
         result.message = 'Message: [start]'
         result.parent.metadata['tests'] += 'x'

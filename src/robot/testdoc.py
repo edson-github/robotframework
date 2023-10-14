@@ -231,8 +231,7 @@ class JsonConverter:
                 yield self._convert_var(kw)
 
     def _convert_for(self, data):
-        name = '%s %s %s' % (', '.join(data.assign), data.flavor,
-                             seq2str2(data.values))
+        name = f"{', '.join(data.assign)} {data.flavor} {seq2str2(data.values)}"
         return {'type': 'FOR', 'name': self._escape(name), 'arguments': ''}
 
     def _convert_while(self, data):
@@ -270,7 +269,7 @@ class JsonConverter:
 
     def _get_kw_name(self, kw):
         if kw.assign:
-            return '%s = %s' % (', '.join(a.rstrip('= ') for a in kw.assign), kw.name)
+            return f"{', '.join(a.rstrip('= ') for a in kw.assign)} = {kw.name}"
         return kw.name
 
     def _get_timeout(self, timeout):

@@ -113,6 +113,7 @@ class TestLogger(unittest.TestCase):
         assert_false(hasattr(logger, 'msg'))
 
     def test_start_and_end_suite_test_and_keyword(self):
+
         class MyLogger(LoggerApi):
             def start_suite(self, suite, result): self.started_suite = suite
             def end_suite(self, suite, result): self.ended_suite = suite
@@ -131,8 +132,8 @@ class TestLogger(unittest.TestCase):
             arg = Arg()
             arg.result = arg
             for stend in 'start', 'end':
-                getattr(self.logger, stend + '_' + name)(arg, arg)
-                assert_equal(getattr(logger, stend + 'ed_' + name), arg)
+                getattr(self.logger, f'{stend}_{name}')(arg, arg)
+                assert_equal(getattr(logger, f'{stend}ed_{name}'), arg)
 
     def test_verbose_console_output_is_automatically_registered(self):
         logger = Logger()

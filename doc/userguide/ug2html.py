@@ -273,7 +273,7 @@ def create_zip():
 def zip_distribution(dirpath):
     from zipfile import ZipFile, ZIP_DEFLATED
 
-    zippath = os.path.normpath(dirpath) + '.zip'
+    zippath = f'{os.path.normpath(dirpath)}.zip'
     arcroot = os.path.dirname(dirpath)
 
     with ZipFile(zippath, 'w', compression=ZIP_DEFLATED) as zipfile:

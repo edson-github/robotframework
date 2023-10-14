@@ -2,10 +2,7 @@ import sys
 
 
 def read_all():
-    fails = 0
-    for line in sys.stdin:
-        if 'FAIL' in line:
-            fails += 1
+    fails = sum(1 for line in sys.stdin if 'FAIL' in line)
     print("%d lines with 'FAIL' found!" % fails)
 
 

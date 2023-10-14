@@ -177,12 +177,8 @@ class DynamicArgumentParser(ArgumentSpecParser):
         if isinstance(arg, tuple):
             if self._is_invalid_tuple(arg):
                 self._report_error(f'Invalid argument "{arg}".')
-            if len(arg) == 1:
-                return arg[0]
-            return arg
-        if '=' in arg:
-            return tuple(arg.split('=', 1))
-        return arg
+            return arg[0] if len(arg) == 1 else arg
+        return tuple(arg.split('=', 1)) if '=' in arg else arg
 
     def _is_invalid_tuple(self, arg):
         return (len(arg) > 2

@@ -10,7 +10,7 @@ class ListenerMethod:
     def __call__(self, *args, **kws):
         if not self.failed:
             self.failed = True
-            raise AssertionError("Expected failure in %s!" % self.__name__)
+            raise AssertionError(f"Expected failure in {self.__name__}!")
 
 
 for name in ['start_suite', 'end_suite', 'start_test', 'end_test',

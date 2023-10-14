@@ -730,9 +730,7 @@ class ResourceFile(ModelObject):
     def source(self) -> 'Path|None':
         if self._source:
             return self._source
-        if self.parent:
-            return self.parent.source
-        return None
+        return self.parent.source if self.parent else None
 
     @source.setter
     def source(self, source: 'Path|str|None'):
@@ -976,7 +974,7 @@ class Import(ModelObject):
         return data
 
     def _include_in_repr(self, name: str, value: Any) -> bool:
-        return name in ('type', 'name') or value
+        return name in {'type', 'name'} or value
 
 
 class Imports(model.ItemList):

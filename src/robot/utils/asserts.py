@@ -117,12 +117,12 @@ def assert_true(expr, msg=None):
 
 def assert_not_none(obj, msg=None, values=True):
     """Fail the test if given object is None."""
-    _msg = 'is None'
     if obj is None:
+        _msg = 'is None'
         if msg is None:
             msg = _msg
         elif values is True:
-            msg = '%s: %s' % (msg, _msg)
+            msg = f'{msg}: {_msg}'
         _report_failure(msg)
 
 
@@ -133,7 +133,7 @@ def assert_none(obj, msg=None, values=True):
         if msg is None:
             msg = _msg
         elif values is True:
-            msg = '%s: %s' % (msg, _msg)
+            msg = f'{msg}: {_msg}'
         _report_failure(msg)
 
 
@@ -157,7 +157,7 @@ def assert_raises(exc_class, callable_obj, *args, **kwargs):
             exc_name = exc_class.__name__
         else:
             exc_name = str(exc_class)
-        _report_failure('%s not raised' % exc_name)
+        _report_failure(f'{exc_name} not raised')
 
 
 def assert_raises_with_msg(exc_class, expected_msg, callable_obj, *args,
@@ -172,12 +172,12 @@ def assert_raises_with_msg(exc_class, expected_msg, callable_obj, *args,
             exc_name = exc_class.__name__
         else:
             exc_name = str(exc_class)
-        _report_failure('%s not raised' % exc_name)
+        _report_failure(f'{exc_name} not raised')
 
 
 def assert_equal(first, second, msg=None, values=True, formatter=safe_str):
     """Fail if given objects are unequal as determined by the '==' operator."""
-    if not first == second:
+    if first != second:
         _report_inequality(first, second, '!=', msg, values, formatter)
 
 
@@ -224,9 +224,9 @@ def _report_inequality(obj1, obj2, delim, msg=None, values=False, formatter=safe
     if not msg:
         msg = _format_message(obj1, obj2, delim, formatter)
     elif values:
-        msg = '%s: %s' % (msg, _format_message(obj1, obj2, delim, formatter))
+        msg = f'{msg}: {_format_message(obj1, obj2, delim, formatter)}'
     if values and extra:
-        msg += ' ' + extra
+        msg += f' {extra}'
     raise AssertionError(msg)
 
 
@@ -234,6 +234,5 @@ def _format_message(obj1, obj2, delim, formatter=safe_str):
     str1 = formatter(obj1)
     str2 = formatter(obj2)
     if delim == '!=' and str1 == str2:
-        return '%s (%s) != %s (%s)' % (str1, type_name(obj1),
-                                       str2, type_name(obj2))
-    return '%s %s %s' % (str1, delim, str2)
+        return f'{str1} ({type_name(obj1)}) != {str2} ({type_name(obj2)})'
+    return f'{str1} {delim} {str2}'

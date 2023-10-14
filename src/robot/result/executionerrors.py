@@ -53,4 +53,4 @@ class ExecutionErrors:
             return 'No execution errors'
         if len(self) == 1:
             return f'Execution error: {self[0]}'
-        return '\n'.join(['Execution errors:'] + ['- ' + str(m) for m in self])
+        return '\n'.join(['Execution errors:'] + [f'- {str(m)}' for m in self])

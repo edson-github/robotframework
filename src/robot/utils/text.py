@@ -67,9 +67,9 @@ def _cut_long_line(line, used, from_end):
     available_chars = available_lines * _MAX_ERROR_LINE_LENGTH - 3
     if len(line) > available_chars:
         if not from_end:
-            line = line[:available_chars] + '...'
+            line = f'{line[:available_chars]}...'
         else:
-            line = '...' + line[-available_chars:]
+            line = f'...{line[-available_chars:]}'
     return line
 
 
@@ -92,14 +92,14 @@ def format_assign_message(variable, value, items=None, cut_long=True):
 def _dict_to_str(d):
     if not d:
         return '{ }'
-    return '{ %s }' % ' | '.join('%s=%s' % (safe_str(k), safe_str(d[k])) for k in d)
+    return '{ %s }' % ' | '.join(f'{safe_str(k)}={safe_str(d[k])}' for k in d)
 
 
 def cut_assign_value(value):
     if not is_string(value):
         value = safe_str(value)
     if len(value) > MAX_ASSIGN_LENGTH:
-        value = value[:MAX_ASSIGN_LENGTH] + '...'
+        value = f'{value[:MAX_ASSIGN_LENGTH]}...'
     return value
 
 
@@ -108,11 +108,10 @@ def get_console_length(text):
 
 
 def pad_console_length(text, width):
-    if width < 5:
-        width = 5
+    width = max(width, 5)
     diff = get_console_length(text) - width
     if diff > 0:
-        text = _lose_width(text, diff+3) + '...'
+        text = f'{_lose_width(text, diff + 3)}...'
     return _pad_width(text, width)
 
 
@@ -168,8 +167,7 @@ def split_tags_from_doc(doc):
     if not doc:
         return doc, tags
     lines = doc.splitlines()
-    match = _TAGS_RE.match(lines[-1])
-    if match:
+    if match := _TAGS_RE.match(lines[-1]):
         doc = '\n'.join(lines[:-1]).rstrip()
         tags = [tag.strip() for tag in match.group(1).split(',')]
     return doc, tags

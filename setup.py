@@ -14,7 +14,7 @@ with open(join(dirname(abspath(__file__)), 'README.rst')) as f:
         search = '`<{0}.rst>`__'.format(text)
         replace = '`{0}.rst <{1}/{0}.rst>`__'.format(text, base_url)
         if search not in LONG_DESCRIPTION:
-            raise RuntimeError('{} not found from README.rst'.format(search))
+            raise RuntimeError(f'{search} not found from README.rst')
         LONG_DESCRIPTION = LONG_DESCRIPTION.replace(search, replace)
 CLASSIFIERS = """
 Development Status :: 5 - Production/Stable

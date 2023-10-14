@@ -16,7 +16,7 @@ def returning():
     return 'Hello from module library'
 
 def argument(arg):
-    assert arg == 'Hello', "Expected 'Hello', got '%s'" % arg
+    assert arg == 'Hello', f"Expected 'Hello', got '{arg}'"
 
 def many_arguments(arg1, arg2, arg3):
     assert arg1 == arg2 == arg3, ("All arguments should have been equal, got: "
@@ -26,14 +26,14 @@ def default_arguments(arg1, arg2='Hi', arg3='Hello'):
     many_arguments(arg1, arg2, arg3)
 
 def variable_arguments(*args):
-    return sum([int(arg) for arg in args])
+    return sum(int(arg) for arg in args)
 
 attribute = 'This is not a keyword!'
 
 class NotLibrary:
 
     def two_arguments(self, arg1, arg2):
-        msg = "Arguments should have been unequal, both were '%s'" % arg1
+        msg = f"Arguments should have been unequal, both were '{arg1}'"
         assert arg1 != arg2, msg
 
     def not_keyword(self):

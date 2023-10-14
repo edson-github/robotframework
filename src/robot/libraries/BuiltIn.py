@@ -149,9 +149,7 @@ class _Converter(_BuiltInBase):
     def _convert_to_integer(self, orig, base=None):
         try:
             item, base = self._get_base(orig, base)
-            if base:
-                return int(item, self._convert_to_integer(base))
-            return int(item)
+            return int(item, self._convert_to_integer(base)) if base else int(item)
         except:
             raise RuntimeError(f"'{orig}' cannot be converted to an integer: "
                                f"{get_error_message()}")
@@ -247,7 +245,7 @@ class _Converter(_BuiltInBase):
         ret = format(self._convert_to_integer(item, base), format_spec)
         prefix = prefix or ''
         if ret[0] == '-':
-            prefix = '-' + prefix
+            prefix = f'-{prefix}'
             ret = ret[1:]
         if length:
             ret = ret.rjust(self._convert_to_integer(length), '0')
@@ -383,9 +381,9 @@ class _Converter(_BuiltInBase):
                 ordinals = getattr(self, f'_get_ordinals_from_{input_type}')
             except AttributeError:
                 raise RuntimeError(f"Invalid input type '{input_type}'.")
-            return bytes(bytearray(o for o in ordinals(input)))
+            return bytes(bytearray(iter(ordinals(input))))
         except:
-            raise RuntimeError("Creating bytes failed: " + get_error_message())
+            raise RuntimeError(f"Creating bytes failed: {get_error_message()}")
 
     def _get_ordinals_from_text(self, input):
         for char in input:
@@ -496,8 +494,7 @@ class _Verify(_BuiltInBase):
 
     def _set_and_remove_tags(self, tags):
         set_tags = [tag for tag in tags if not tag.startswith('-')]
-        remove_tags = [tag[1:] for tag in tags if tag.startswith('-')]
-        if remove_tags:
+        if remove_tags := [tag[1:] for tag in tags if tag.startswith('-')]:
             self.remove_tags(*remove_tags)
         if set_tags:
             self.set_tags(*set_tags)
@@ -1021,19 +1018,19 @@ class _Verify(_BuiltInBase):
             if is_string(container):
                 container = container.lower()
             elif is_list_like(container):
-                container = set(x.lower() if is_string(x) else x for x in container)
+                container = {x.lower() if is_string(x) else x for x in container}
         if strip_spaces and is_string(item):
             item = self._strip_spaces(item, strip_spaces)
             if is_string(container):
                 container = self._strip_spaces(container, strip_spaces)
             elif is_list_like(container):
-                container = set(self._strip_spaces(x, strip_spaces) for x in container)
+                container = {self._strip_spaces(x, strip_spaces) for x in container}
         if collapse_spaces and is_string(item):
             item = self._collapse_spaces(item)
             if is_string(container):
                 container = self._collapse_spaces(container)
             elif is_list_like(container):
-                container = set(self._collapse_spaces(x) for x in container)
+                container = {self._collapse_spaces(x) for x in container}
         if item in container:
             raise AssertionError(self._get_string_msg(orig_container, item, msg,
                                                       values, 'contains'))
@@ -1077,19 +1074,19 @@ class _Verify(_BuiltInBase):
             if is_string(container):
                 container = container.lower()
             elif is_list_like(container):
-                container = set(x.lower() if is_string(x) else x for x in container)
+                container = {x.lower() if is_string(x) else x for x in container}
         if strip_spaces and is_string(item):
             item = self._strip_spaces(item, strip_spaces)
             if is_string(container):
                 container = self._strip_spaces(container, strip_spaces)
             elif is_list_like(container):
-                container = set(self._strip_spaces(x, strip_spaces) for x in container)
+                container = {self._strip_spaces(x, strip_spaces) for x in container}
         if collapse_spaces and is_string(item):
             item = self._collapse_spaces(item)
             if is_string(container):
                 container = self._collapse_spaces(container)
             elif is_list_like(container):
-                container = set(self._collapse_spaces(x) for x in container)
+                container = {self._collapse_spaces(x) for x in container}
         if item not in container:
             raise AssertionError(self._get_string_msg(orig_container, item, msg,
                                                       values, 'does not contain'))
@@ -1132,20 +1129,20 @@ class _Verify(_BuiltInBase):
             if is_string(container):
                 container = container.lower()
             elif is_list_like(container):
-                container = set(x.lower() if is_string(x) else x for x in container)
+                container = {x.lower() if is_string(x) else x for x in container}
         if strip_spaces:
             items = [self._strip_spaces(x, strip_spaces) for x in items]
             if is_string(container):
                 container = self._strip_spaces(container, strip_spaces)
             elif is_list_like(container):
-                container = set(self._strip_spaces(x, strip_spaces) for x in container)
+                container = {self._strip_spaces(x, strip_spaces) for x in container}
         if collapse_spaces:
             items = [self._collapse_spaces(x) for x in items]
             if is_string(container):
                 container = self._collapse_spaces(container)
             elif is_list_like(container):
-                container = set(self._collapse_spaces(x) for x in container)
-        if not any(item in container for item in items):
+                container = {self._collapse_spaces(x) for x in container}
+        if all(item not in container for item in items):
             msg = self._get_string_msg(orig_container,
                                        seq2str(items, lastsep=' or '),
                                        msg, values,
@@ -1190,19 +1187,19 @@ class _Verify(_BuiltInBase):
             if is_string(container):
                 container = container.lower()
             elif is_list_like(container):
-                container = set(x.lower() if is_string(x) else x for x in container)
+                container = {x.lower() if is_string(x) else x for x in container}
         if strip_spaces:
             items = [self._strip_spaces(x, strip_spaces) for x in items]
             if is_string(container):
                 container = self._strip_spaces(container, strip_spaces)
             elif is_list_like(container):
-                container = set(self._strip_spaces(x, strip_spaces) for x in container)
+                container = {self._strip_spaces(x, strip_spaces) for x in container}
         if collapse_spaces:
             items = [self._collapse_spaces(x) for x in items]
             if is_string(container):
                 container = self._collapse_spaces(container)
             elif is_list_like(container):
-                container = set(self._collapse_spaces(x) for x in container)
+                container = {self._collapse_spaces(x) for x in container}
         if any(item in container for item in items):
             msg = self._get_string_msg(orig_container,
                                        seq2str(items, lastsep=' or '),
@@ -1370,10 +1367,7 @@ class _Verify(_BuiltInBase):
             raise AssertionError(self._get_string_msg(string, pattern, msg,
                                                       values, 'does not match'))
         match = res.group(0)
-        groups = res.groups()
-        if groups:
-            return [match] + list(groups)
-        return match
+        return [match] + list(groups) if (groups := res.groups()) else match
 
     def should_not_match_regexp(self, string, pattern, msg=None, values=True, flags=None):
         """Fails if ``string`` matches ``pattern`` as a regular expression.
@@ -1547,7 +1541,7 @@ class _Variables(_BuiltInBase):
         except RERAISED_EXCEPTIONS:
             raise
         except:
-            name = '$' + name[1:]
+            name = f'${name[1:]}'
         return name, value
 
     @run_keyword_variant(resolve=0)
@@ -1631,7 +1625,7 @@ class _Variables(_BuiltInBase):
         `Set Test Variable` and `Set Suite Variable` for information on how to
         set variables so that they are available also in a larger scope.
         """
-        if len(values) == 0:
+        if not values:
             return ''
         elif len(values) == 1:
             return values[0]
@@ -2030,9 +2024,7 @@ class _RunKeyword(_BuiltInBase):
         them with a backslash like ``\\ELSE`` and ``\\ELSE IF``.
         """
         args, branch = self._split_elif_or_else_branch(args)
-        if self._is_true(condition):
-            return self.run_keyword(name, *args)
-        return branch()
+        return self.run_keyword(name, *args) if self._is_true(condition) else branch()
 
     def _split_elif_or_else_branch(self, args):
         if 'ELSE IF' in args:
@@ -2217,7 +2209,7 @@ class _RunKeyword(_BuiltInBase):
                     'EQUALS': lambda s, p: s == p,
                     'STARTS': lambda s, p: s.startswith(p),
                     'REGEXP': lambda s, p: re.fullmatch(p, s) is not None}
-        prefixes = tuple(prefix + ':' for prefix in matchers)
+        prefixes = tuple(f'{prefix}:' for prefix in matchers)
         if not expected_error.startswith(prefixes):
             return glob(error, expected_error)
         prefix, expected_error = expected_error.split(':', 1)
@@ -2431,7 +2423,7 @@ class _RunKeyword(_BuiltInBase):
         values = self._verify_values_for_set_variable_if(values[1:], True)
         if len(values) == 1:
             return self._variables.replace_scalar(values[0])
-        return self.run_keyword('BuiltIn.Set Variable If', *values[0:])
+        return self.run_keyword('BuiltIn.Set Variable If', *values[:])
 
     def _verify_values_for_set_variable_if(self, values, default=False):
         if not values:
@@ -2926,8 +2918,7 @@ class _Misc(_BuiltInBase):
         """
         seconds = timestr_to_secs(time_)
         # Python hangs with negative values
-        if seconds < 0:
-            seconds = 0
+        seconds = max(seconds, 0)
         self._sleep_in_parts(seconds)
         self.log(f'Slept {secs_to_timestr(seconds)}.')
         if reason:
@@ -3072,8 +3063,7 @@ class _Misc(_BuiltInBase):
             match = search_variable(msg)
             value = self._variables.replace_scalar(msg)
             if match.is_list_variable():
-                for item in value:
-                    yield item
+                yield from value
             elif match.is_dict_variable():
                 for name, value in value.items():
                     yield f'{name}={value}'
@@ -3482,7 +3472,7 @@ class _Misc(_BuiltInBase):
         | ${escaped} = | Regexp Escape | ${original} |
         | @{strings} = | Regexp Escape | @{strings}  |
         """
-        if len(patterns) == 0:
+        if not patterns:
             return ''
         if len(patterns) == 1:
             return re.escape(patterns[0])

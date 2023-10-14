@@ -65,15 +65,18 @@ class TypeConverter:
         if type_info.type is None:
             return None
         if custom_converters:
-            info = custom_converters.get_converter_info(type_info.type)
-            if info:
+            if info := custom_converters.get_converter_info(type_info.type):
                 return CustomConverter(type_info, info)
         if type_info.type in cls._converters:
             return cls._converters[type_info.type](type_info, custom_converters, languages)
-        for converter in cls._converters.values():
-            if converter.handles(type_info):
-                return converter(type_info, custom_converters, languages)
-        return None
+        return next(
+            (
+                converter(type_info, custom_converters, languages)
+                for converter in cls._converters.values()
+                if converter.handles(type_info)
+            ),
+            None,
+        )
 
     @classmethod
     def handles(cls, type_info: 'TypeInfo') -> bool:
@@ -247,9 +250,7 @@ class BooleanConverter(TypeConverter):
             return None
         if normalized in self.languages.true_strings:
             return True
-        if normalized in self.languages.false_strings:
-            return False
-        return value
+        return False if normalized in self.languages.false_strings else value
 
 
 @TypeConverter.register
@@ -416,12 +417,11 @@ class ListConverter(TypeConverter):
                  custom_converters: 'CustomArgumentConverters|None' = None,
                  languages: LanguagesLike = None):
         super().__init__(type_info, custom_converters, languages)
-        nested = type_info.nested
-        if not nested:
-            self.converter = None
-        else:
+        if nested := type_info.nested:
             self.type_name = str(type_info)
             self.converter = self.converter_for(nested[0], custom_converters, languages)
+        else:
+            self.converter = None
 
     def no_conversion_needed(self, value):
         if isinstance(value, str) or not super().no_conversion_needed(value):
@@ -538,12 +538,10 @@ class TypedDictConverter(TypeConverter):
                     value[key] = converter.convert(value[key], name=key, kind='Item')
         if not_allowed:
             error = f'Item{s(not_allowed)} {seq2str(sorted(not_allowed))} not allowed.'
-            available = [key for key in self.converters if key not in value]
-            if available:
+            if available := [key for key in self.converters if key not in value]:
                 error += f' Available item{s(available)}: {seq2str(sorted(available))}'
             raise ValueError(error)
-        missing = [key for key in self.type_info.required if key not in value]
-        if missing:
+        if missing := [key for key in self.type_info.required if key not in value]:
             raise ValueError(f"Required item{s(missing)} "
                              f"{seq2str(sorted(missing))} missing.")
         return value
@@ -560,13 +558,12 @@ class DictionaryConverter(TypeConverter):
                  custom_converters: 'CustomArgumentConverters|None' = None,
                  languages: LanguagesLike = None):
         super().__init__(type_info, custom_converters, languages)
-        nested = type_info.nested
-        if not nested:
-            self.converters = ()
-        else:
+        if nested := type_info.nested:
             self.type_name = str(type_info)
             self.converters = tuple(self.converter_for(t, custom_converters, languages)
                                     or NullConverter() for t in nested)
+        else:
+            self.converters = ()
 
     def no_conversion_needed(self, value):
         if isinstance(value, str) or not super().no_conversion_needed(value):
@@ -611,12 +608,11 @@ class SetConverter(TypeConverter):
                  custom_converters: 'CustomArgumentConverters|None' = None,
                  languages: LanguagesLike = None):
         super().__init__(type_info, custom_converters, languages)
-        nested = type_info.nested
-        if not nested:
-            self.converter = None
-        else:
+        if nested := type_info.nested:
             self.type_name = str(type_info)
             self.converter = self.converter_for(nested[0], custom_converters, languages)
+        else:
+            self.converter = None
 
     def no_conversion_needed(self, value):
         if isinstance(value, str) or not super().no_conversion_needed(value):

@@ -75,7 +75,7 @@ class AvoidProperties:
 
     @classmethod
     @FailingNonDataDescriptor
-    def failing_classmethod_non_data_descriptor(self):
+    def failing_classmethod_non_data_descriptor(cls):
         pass
 
     @FailingDataDescriptor
@@ -84,6 +84,6 @@ class AvoidProperties:
 
     @classmethod
     @FailingDataDescriptor
-    def failing_classmethod_data_descriptor(self):
+    def failing_classmethod_data_descriptor(cls):
         pass
 

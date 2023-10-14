@@ -43,11 +43,10 @@ class LinkFormatter:
         return pre + self._get_link(url)
 
     def _get_image(self, src, title=None):
-        return '<img src="%s" title="%s">' \
-                % (self._quot(src), self._quot(title or src))
+        return f'<img src="{self._quot(src)}" title="{self._quot(title or src)}">'
 
     def _get_link(self, href, content=None):
-        return '<a href="%s">%s</a>' % (self._quot(href), content or href)
+        return f'<a href="{self._quot(href)}">{content or href}</a>'
 
     def _quot(self, attr):
         return attr if '"' not in attr else attr.replace('"', '&quot;')
@@ -231,7 +230,7 @@ class ParagraphFormatter(_Formatter):
                        for other in self._other_formatters)
 
     def format(self, lines):
-        return '<p>%s</p>' % self._format_line(' '.join(lines))
+        return f"<p>{self._format_line(' '.join(lines))}</p>"
 
 
 class TableFormatter(_Formatter):
@@ -265,7 +264,7 @@ class TableFormatter(_Formatter):
             content = content[1:-1].strip()
         else:
             tx = 'td'
-        return '<%s>%s</%s>' % (tx, self._format_cell_content(content), tx)
+        return f'<{tx}>{self._format_cell_content(content)}</{tx}>'
 
 
 class PreformattedFormatter(_Formatter):
@@ -287,8 +286,10 @@ class ListFormatter(_Formatter):
         return line.strip().startswith('- ') or line.startswith(' ') and self._lines
 
     def format(self, lines):
-        items = ['<li>%s</li>' % self._format_item(line)
-                 for line in self._combine_lines(lines)]
+        items = [
+            f'<li>{self._format_item(line)}</li>'
+            for line in self._combine_lines(lines)
+        ]
         return '\n'.join(['<ul>'] + items + ['</ul>'])
 
     def _combine_lines(self, lines):

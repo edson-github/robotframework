@@ -144,11 +144,11 @@ def number(argument: Number, expected: int = 0):
 
 
 def true(argument: bool):
-    assert argument is True
+    assert argument
 
 
 def false(argument: bool):
-    assert argument is False
+    assert not argument
 
 
 def string(argument: String, expected: str = '123'):
@@ -226,7 +226,7 @@ class StatefulLibrary:
 
     def multiply(self, num: Number, expected: int):
         self.counter += 1
-        assert num == int(expected)
+        assert num == expected
 
 
 class StatefulGlobalLibrary:
@@ -238,4 +238,4 @@ class StatefulGlobalLibrary:
 
     def global_multiply(self, num: Number, expected: int):
         self.counter += 1
-        assert num == int(expected)
+        assert num == expected

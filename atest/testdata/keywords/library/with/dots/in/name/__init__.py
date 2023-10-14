@@ -8,5 +8,5 @@ class name:
                 'Conflict']
 
     def run_keyword(self, name, args):
-        print("Running keyword '%s'." % name)
+        print(f"Running keyword '{name}'.")
         return '-'.join(args)

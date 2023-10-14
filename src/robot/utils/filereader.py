@@ -47,8 +47,7 @@ class FileReader:  # FIXME: Rename to SourceReader
         self.file, self._opened = self._get_file(source, accept_text)
 
     def _get_file(self, source: Source, accept_text: bool) -> 'tuple[TextIO, bool]':
-        path = self._get_path(source, accept_text)
-        if path:
+        if path := self._get_path(source, accept_text):
             file = open(path, 'rb')
             opened = True
         elif is_string(source):

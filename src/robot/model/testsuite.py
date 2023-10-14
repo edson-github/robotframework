@@ -196,9 +196,7 @@ class TestSuite(ModelObject, Generic[KW, TC]):
 
         Just :attr:`name` of the suite if it has no :attr:`parent`.
         """
-        if not self.parent:
-            return self.name
-        return f'{self.parent.full_name}.{self.name}'
+        return self.name if not self.parent else f'{self.parent.full_name}.{self.name}'
 
     @property
     def longname(self) -> str:

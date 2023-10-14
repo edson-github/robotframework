@@ -134,13 +134,13 @@ class TagStatLink:
         return link, title
 
     def _get_match_regexp(self, pattern):
-        pattern = '^%s$' % ''.join(self._yield_match_pattern(pattern))
+        pattern = f"^{''.join(self._yield_match_pattern(pattern))}$"
         return re.compile(pattern, re.IGNORECASE)
 
     def _yield_match_pattern(self, pattern):
         for token in self._match_pattern_tokenizer.split(pattern):
             if token.startswith('?'):
-                yield '(%s)' % ('.'*len(token))
+                yield f"({'.' * len(token)})"
             elif token == '*':
                 yield '(.*)'
             else:

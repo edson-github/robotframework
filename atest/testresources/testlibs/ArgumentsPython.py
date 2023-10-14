@@ -8,7 +8,7 @@ class ArgumentsPython:
 
     def a_1(self, arg):
         """(1,1)"""
-        return 'a_1: ' + arg
+        return f'a_1: {arg}'
 
     def a_3(self, arg1, arg2, arg3):
         """(3,3)"""
@@ -16,7 +16,7 @@ class ArgumentsPython:
 
     def a_0_1(self, arg='default'):
         """(0,1)"""
-        return 'a_0_1: ' + arg
+        return f'a_0_1: {arg}'
 
     def a_1_3(self, arg1, arg2='default', arg3='default'):
         """(1,3)"""

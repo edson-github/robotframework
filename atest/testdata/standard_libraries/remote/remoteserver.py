@@ -59,9 +59,7 @@ class RemoteServer(SimpleXMLRPCServer):
         return args
 
     def _format_kwo(self, arg, defaults):
-        if defaults and arg in defaults:
-            return f'{arg}={defaults[arg]}'
-        return arg
+        return f'{arg}={defaults[arg]}' if defaults and arg in defaults else arg
 
     def get_keyword_tags(self, name):
         kw = getattr(self.library, name)

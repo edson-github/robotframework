@@ -42,10 +42,7 @@ imported = {}
 
 
 def get_tests(directory=None):
-    if directory is None:
-        directory = base
-    else:
-        directory = os.path.join(base, directory)
+    directory = base if directory is None else os.path.join(base, directory)
     sys.path.insert(0, directory)
     tests = []
     for name in sorted(os.listdir(directory)):
@@ -102,6 +99,5 @@ if __name__ == "__main__":
                                      failfast=args.failfast)
     result = runner.run(suite)
     rc = len(result.failures) + len(result.errors)
-    if rc > 250:
-        rc = 250
+    rc = min(rc, 250)
     sys.exit(rc)

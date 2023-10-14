@@ -8,8 +8,9 @@ class _BaseLib:
 
     def should_be_registered(self, *expected):
         if self.registered != set(expected):
-            raise AssertionError('Wrong registered: %s != %s'
-                                 % (sorted(self.registered), sorted(expected)))
+            raise AssertionError(
+                f'Wrong registered: {sorted(self.registered)} != {sorted(expected)}'
+            )
 
 
 class Global(_BaseLib):

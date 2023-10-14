@@ -16,7 +16,7 @@ class ExampleLibrary:
 
     def print_n_times(self, msg, count, delay=0):
         """Print given message n times"""
-        for i in range(int(count)):
+        for _ in range(int(count)):
             print(msg)
             self._sleep(delay)
 
@@ -27,8 +27,8 @@ class ExampleLibrary:
         print()
 
     def print_to_stdout_and_stderr(self, msg):
-        print('stdout: ' + msg, file=sys.stdout)
-        print('stderr: ' + msg, file=sys.stderr)
+        print(f'stdout: {msg}', file=sys.stdout)
+        print(f'stderr: {msg}', file=sys.stderr)
 
     def single_line_doc(self):
         """One line keyword documentation."""
@@ -87,7 +87,7 @@ class ExampleLibrary:
         return ObjectToReturn(name)
 
     def check_object_name(self, object, name):
-        assert object.name == name, '%s != %s' % (object.name, name)
+        assert object.name == name, f'{object.name} != {name}'
 
     def set_object_name(self, object, name):
         object.name = name
@@ -102,23 +102,23 @@ class ExampleLibrary:
         try:
             actual = getattr(self, normalize(name))
         except AttributeError:
-            raise AssertionError("Attribute '%s' not set" % name)
+            raise AssertionError(f"Attribute '{name}' not set")
         if not eq(actual, expected):
-            raise AssertionError("Attribute '%s' was '%s', expected '%s'"
-                                 % (name, actual, expected))
+            raise AssertionError(
+                f"Attribute '{name}' was '{actual}', expected '{expected}'"
+            )
 
     def check_attribute_not_set(self, name):
         if hasattr(self, normalize(name)):
-            raise AssertionError("Attribute '%s' should not be set" % name)
+            raise AssertionError(f"Attribute '{name}' should not be set")
 
     def backslashes(self, count=1):
         return '\\' * int(count)
 
     def read_and_log_file(self, path, binary=False):
-        mode = binary and 'rb' or 'r'
-        _file = open(path, mode)
-        print(_file.read())
-        _file.close()
+        mode = 'rb' if binary else 'r'
+        with open(path, mode) as _file:
+            print(_file.read())
 
     def print_control_chars(self):
         print('\033[31mRED\033[m\033[32mGREEN\033[m')
@@ -140,7 +140,7 @@ class ExampleLibrary:
     def write_to_file_after_sleeping(self, path, sec, msg=None):
         with open(path, 'w') as file:
             self._sleep(sec)
-            file.write(msg or 'Slept %s seconds' % sec)
+            file.write(msg or f'Slept {sec} seconds')
 
     def sleep_without_logging(self, timestr):
         seconds = timestr_to_secs(timestr)
@@ -161,6 +161,7 @@ class ExampleLibrary:
         return _MyList(values)
 
     def return_unrepresentable_objects(self, identifier=None, just_one=False):
+
         class FailingStr:
 
             def __init__(self, identifier=identifier):
@@ -169,9 +170,7 @@ class ExampleLibrary:
             def __str__(self):
                 raise RuntimeError
 
-        if just_one:
-            return FailingStr()
-        return FailingStr(), FailingStr()
+        return FailingStr() if just_one else (FailingStr(), FailingStr())
 
     def fail_with_suppressed_exception_name(self, msg):
         raise MyException(msg)

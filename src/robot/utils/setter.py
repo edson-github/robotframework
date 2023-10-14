@@ -57,7 +57,7 @@ class setter(Generic[T, V, A]):
 
     def __init__(self, method: Callable[[T, V], A]):
         self.method = method
-        self.attr_name = '_setter__' + method.__name__
+        self.attr_name = f'_setter__{method.__name__}'
         self.__doc__ = method.__doc__
 
     @overload
@@ -87,8 +87,8 @@ class SetterAwareType(type):
     def __new__(cls, name, bases, dct):
         if '__slots__' in dct:
             slots = list(dct['__slots__'])
-            for item in dct.values():
-                if isinstance(item, setter):
-                    slots.append(item.attr_name)
+            slots.extend(
+                item.attr_name for item in dct.values() if isinstance(item, setter)
+            )
             dct['__slots__'] = slots
         return type.__new__(cls, name, bases, dct)

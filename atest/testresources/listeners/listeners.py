@@ -59,8 +59,9 @@ class SuiteAndTestCounts:
     def start_suite(self, name, attrs):
         data = attrs['tests'], attrs['suites'], attrs['totaltests']
         if data != self.exp_data[name]:
-            raise AssertionError('Wrong tests or suites in %s: %s != %s.'
-                                 % (name, self.exp_data[name], data))
+            raise AssertionError(
+                f'Wrong tests or suites in {name}: {self.exp_data[name]} != {data}.'
+            )
 
 
 class KeywordType:
@@ -69,8 +70,9 @@ class KeywordType:
     def start_keyword(self, name, attrs):
         expected = self._get_expected_type(**attrs)
         if attrs['type'] != expected:
-            raise AssertionError("Wrong keyword type '%s', expected '%s'."
-                                 % (attrs['type'], expected))
+            raise AssertionError(
+                f"Wrong keyword type '{attrs['type']}', expected '{expected}'."
+            )
 
     def _get_expected_type(self, kwname, libname, args, source, lineno, **ignore):
         if ' IN ' in kwname:
@@ -108,8 +110,9 @@ class KeywordStatus:
     def _validate_status(self, attrs, run_status):
         expected = 'NOT RUN' if self._not_run(attrs) else run_status
         if attrs['status'] != expected:
-            raise AssertionError('Wrong keyword status %s, expected %s.'
-                                 % (attrs['status'], expected))
+            raise AssertionError(
+                f"Wrong keyword status {attrs['status']}, expected {expected}."
+            )
 
     def _not_run(self, attrs):
         return attrs['type'] in ('IF', 'ELSE') or attrs['args'] == ['not going here']
@@ -119,10 +122,10 @@ class KeywordExecutingListener:
     ROBOT_LISTENER_API_VERSION = '2'
 
     def start_test(self, name, attrs):
-        self._run_keyword('Start %s' % name)
+        self._run_keyword(f'Start {name}')
 
     def end_test(self, name, attrs):
-        self._run_keyword('End %s' % name)
+        self._run_keyword(f'End {name}')
 
     def _run_keyword(self, arg):
         BuiltIn().run_keyword('Log', arg)
@@ -148,8 +151,7 @@ class SuiteSource:
         verifier = {'Root': lambda source: source == '',
                     'Subsuites': os.path.isdir}.get(suite, default)
         if (source and not os.path.isabs(source)) or not verifier(source):
-            raise AssertionError("Suite '%s' has wrong source '%s'."
-                                 % (suite, source))
+            raise AssertionError(f"Suite '{suite}' has wrong source '{source}'.")
 
     def close(self):
         if not (self._started == self._ended == 5):

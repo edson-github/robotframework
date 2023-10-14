@@ -48,4 +48,4 @@ class StringCache:
             if len(compressed) * self._use_compressed_threshold < len(text):
                 return compressed
         # Strings starting with '*' are raw, others are compressed.
-        return '*' + text
+        return f'*{text}'

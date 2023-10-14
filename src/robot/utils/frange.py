@@ -42,9 +42,7 @@ def _digits(number):
         number = repr(number)
     if 'e' in number:
         return _digits_with_exponent(number)
-    if '.' in number:
-        return _digits_with_fractional(number)
-    return 0
+    return _digits_with_fractional(number) if '.' in number else 0
 
 
 def _digits_with_exponent(number):
@@ -56,6 +54,4 @@ def _digits_with_exponent(number):
 
 def _digits_with_fractional(number):
     fractional = number.split('.')[1]
-    if fractional == '0':
-        return 0
-    return len(fractional)
+    return 0 if fractional == '0' else len(fractional)

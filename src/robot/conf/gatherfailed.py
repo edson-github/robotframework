@@ -58,10 +58,11 @@ def gather_failed_tests(output, empty_suite_ok=False):
         suite.visit(gatherer)
         tests_or_tasks = 'tests' if not suite.rpa else 'tasks'
         if not gatherer.tests and not empty_suite_ok:
-            raise DataError('All %s passed.' % tests_or_tasks)
+            raise DataError(f'All {tests_or_tasks} passed.')
     except Exception:
-        raise DataError("Collecting failed %s from '%s' failed: %s"
-                        % (tests_or_tasks, output, get_error_message()))
+        raise DataError(
+            f"Collecting failed {tests_or_tasks} from '{output}' failed: {get_error_message()}"
+        )
     return gatherer.tests
 
 
@@ -74,6 +75,7 @@ def gather_failed_suites(output, empty_suite_ok=False):
         if not gatherer.suites and not empty_suite_ok:
             raise DataError('All suites passed.')
     except Exception:
-        raise DataError("Collecting failed suites from '%s' failed: %s"
-                        % (output, get_error_message()))
+        raise DataError(
+            f"Collecting failed suites from '{output}' failed: {get_error_message()}"
+        )
     return gatherer.suites

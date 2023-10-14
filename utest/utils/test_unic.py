@@ -50,8 +50,8 @@ class TestPrettyRepr(unittest.TestCase):
             expected = repr(item).lstrip('')
         assert_equal(prepr(item, **config), expected)
         if isinstance(item, (str, bytes)) and not config:
-            assert_equal(prepr([item]), '[%s]' % expected)
-            assert_equal(prepr((item,)), '(%s,)' % expected)
+            assert_equal(prepr([item]), f'[{expected}]')
+            assert_equal(prepr((item,)), f'({expected},)')
             assert_equal(prepr({item: item}), '{%s: %s}' % (expected, expected))
             assert_equal(prepr({item}), '{%s}' % expected)
 
@@ -121,17 +121,23 @@ class TestPrettyRepr(unittest.TestCase):
         self._verify(list(range(100)), width=400)
         self._verify(list(range(100)),
                      '[%s]' % ',\n '.join(str(i) for i in range(100)))
-        self._verify(['Hello, world!'] * 4,
-                     '[%s]' % ', '.join(["'Hello, world!'"] * 4))
-        self._verify(['Hello, world!'] * 25,
-                     '[%s]' % ', '.join(["'Hello, world!'"] * 25), width=500)
+        self._verify(
+            ['Hello, world!'] * 4, f"""[{', '.join(["'Hello, world!'"] * 4)}]"""
+        )
+        self._verify(
+            ['Hello, world!'] * 25,
+            f"""[{', '.join(["'Hello, world!'"] * 25)}]""",
+            width=500,
+        )
         self._verify(['Hello, world!'] * 25,
                      '[%s]' % ',\n '.join(["'Hello, world!'"] * 25))
 
     def test_dont_split_long_strings(self):
         self._verify(' '.join(['Hello world!'] * 1000))
-        self._verify(b' '.join([b'Hello world!'] * 1000),
-                     "b'%s'" % ' '.join(['Hello world!'] * 1000))
+        self._verify(
+            b' '.join([b'Hello world!'] * 1000),
+            f"b'{' '.join(['Hello world!'] * 1000)}'",
+        )
         self._verify(bytearray(b' '.join([b'Hello world!'] * 1000)))
 
 
@@ -144,7 +150,7 @@ class UnRepr:
 
     @staticmethod
     def format(name, error):
-        return "<Unrepresentable object %s. Error: %s>" % (name, error)
+        return f"<Unrepresentable object {name}. Error: {error}>"
 
 
 class StrFails(UnRepr):

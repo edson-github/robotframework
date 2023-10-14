@@ -101,15 +101,12 @@ class ErrorDetails:
         prefix = 'Traceback (most recent call last):\n'
         empty_tb = [prefix, '  None\n']
         if self._full_traceback:
-            if tb or value.__context__ or value.__cause__:
-                return traceback.format_exception(etype, value, tb)
-            else:
-                return empty_tb + traceback.format_exception_only(etype, value)
-        else:
-            if tb:
-                return [prefix] + traceback.format_tb(tb)
-            else:
-                return empty_tb
+            return (
+                traceback.format_exception(etype, value, tb)
+                if tb or value.__context__ or value.__cause__
+                else empty_tb + traceback.format_exception_only(etype, value)
+            )
+        return [prefix] + traceback.format_tb(tb) if tb else empty_tb
 
     def _format_message(self, error):
         name = type(error).__name__.split('.')[-1]  # Use only the last part
@@ -119,9 +116,9 @@ class ErrorDetails:
         if self._suppress_name(name, error):
             return message
         if message.startswith('*HTML*'):
-            name = '*HTML* ' + name
+            name = f'*HTML* {name}'
             message = message.split('*', 2)[-1].lstrip()
-        return '%s: %s' % (name, message)
+        return f'{name}: {message}'
 
     def _suppress_name(self, name, error):
         return (name in self._generic_names

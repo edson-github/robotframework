@@ -21,8 +21,8 @@ def year_range(start, end, step=1, format='timestamp'):
     while dt.year <= end:
         if format == 'datetime':
             yield dt
-        if format == 'timestamp':
-            yield dt.strftime('%Y-%m-%d %H:%M:%S')
-        if format == 'epocn':
+        elif format == 'epocn':
             yield time.mktime(dt.timetuple())
+        elif format == 'timestamp':
+            yield dt.strftime('%Y-%m-%d %H:%M:%S')
         dt = dt.replace(year=dt.year + step)

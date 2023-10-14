@@ -179,15 +179,11 @@ class ValidExtensions:
                  included_files: Sequence[str] = ()):
         self.extensions = {ext.lstrip('.').lower() for ext in extensions}
         for pattern in included_files:
-            ext = os.path.splitext(pattern)[1]
-            if ext:
+            if ext := os.path.splitext(pattern)[1]:
                 self.extensions.add(ext.lstrip('.').lower())
 
     def match(self, path: Path) -> bool:
-        for ext in self._extensions_from(path):
-            if ext in self.extensions:
-                return True
-        return False
+        return any(ext in self.extensions for ext in self._extensions_from(path))
 
     def get_extension(self, path: Path) -> str:
         for ext in self._extensions_from(path):

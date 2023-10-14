@@ -4,7 +4,7 @@ class _Object:
     def __str__(self):
         return self.name
     def __repr__(self):
-        return "'%s'" % self.name
+        return f"'{self.name}'"
 
 STRING = 'Hello world!'
 INTEGER = 42
