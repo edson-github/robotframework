@@ -23,15 +23,14 @@ class VisitorFinder:
     def _find_visitor(self, cls):
         if cls is ast.AST:
             return None
-        method = 'visit_' + cls.__name__
+        method = f'visit_{cls.__name__}'
         if hasattr(self, method):
             return getattr(self, method)
         # Forward-compatibility.
         if method == 'visit_Return' and hasattr(self, 'visit_ReturnSetting'):
             return getattr(self, 'visit_ReturnSetting')
         for base in cls.__bases__:
-            visitor = self._find_visitor(base)
-            if visitor:
+            if visitor := self._find_visitor(base):
                 return visitor
         return None
 

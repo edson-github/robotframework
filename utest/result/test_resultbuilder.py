@@ -139,10 +139,7 @@ class TestBuildingSuiteExecutionResult(unittest.TestCase):
 
     def _validate_rpa(self, result, expected):
         assert_equal(result.rpa, expected)
-        if isinstance(result, Result):
-            children = [result.suite]
-        else:
-            children = result.suites
+        children = [result.suite] if isinstance(result, Result) else result.suites
         for child in children:
             self._validate_rpa(child, expected)
 

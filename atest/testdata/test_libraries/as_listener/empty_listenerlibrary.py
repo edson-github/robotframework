@@ -13,7 +13,7 @@ class listener:
         self._stderr("END TEST")
 
     def log_message(self, msg):
-        self._stderr("MESSAGE %s" % msg['message'])
+        self._stderr(f"MESSAGE {msg['message']}")
 
     def close(self):
         self._stderr("CLOSE")

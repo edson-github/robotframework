@@ -25,12 +25,12 @@ class RecommendationFinder:
 
     def find_and_format(self, name, candidates, message, max_matches=10,
                         check_missing_argument_separator=False):
-        recommendations = self.find(name, candidates, max_matches)
-        if recommendations:
+        if recommendations := self.find(name, candidates, max_matches):
             return self.format(message, recommendations)
         if check_missing_argument_separator and name:
-            recommendation = self._check_missing_argument_separator(name, candidates)
-            if recommendation:
+            if recommendation := self._check_missing_argument_separator(
+                name, candidates
+            ):
                 return f'{message} {recommendation}'
         return message
 

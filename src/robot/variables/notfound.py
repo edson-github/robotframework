@@ -27,8 +27,7 @@ def variable_not_found(name, candidates, message=None, deco_braces=True):
     candidates = _decorate_candidates(name[0], candidates, deco_braces)
     normalizer = partial(normalize, ignore='$@&%{}_')
     message = RecommendationFinder(normalizer).find_and_format(
-        name, candidates,
-        message=message or "Variable '%s' not found." % name
+        name, candidates, message=message or f"Variable '{name}' not found."
     )
     raise VariableError(message)
 

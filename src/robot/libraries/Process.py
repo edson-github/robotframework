@@ -655,8 +655,7 @@ class Process:
 
     def _convert_signal_name_to_number(self, name):
         try:
-            return getattr(signal_module,
-                           name if name.startswith('SIG') else 'SIG' + name)
+            return getattr(signal_module, name if name.startswith('SIG') else f'SIG{name}')
         except AttributeError:
             raise RuntimeError(f"Unsupported signal '{name}'.")
 
@@ -902,9 +901,7 @@ class ProcessConfiguration:
 
     def _get_stderr(self, stderr, stdout, stdout_stream):
         if stderr and stderr in ['STDOUT', stdout]:
-            if stdout_stream != subprocess.PIPE:
-                return stdout_stream
-            return subprocess.STDOUT
+            return stdout_stream if stdout_stream != subprocess.PIPE else subprocess.STDOUT
         return self._new_stream(stderr)
 
     def _get_stdin(self, stdin):
@@ -932,15 +929,13 @@ class ProcessConfiguration:
             env = NormalizedDict(env, spaceless=False)
         self._add_to_env(env, extra)
         if WINDOWS:
-            env = dict((key.upper(), env[key]) for key in env)
+            env = {key.upper(): env[key] for key in env}
         return env
 
     def _get_initial_env(self, env, extra):
         if env:
-            return dict((system_encode(k), system_encode(env[k])) for k in env)
-        if extra:
-            return os.environ.copy()
-        return None
+            return {system_encode(k): system_encode(env[k]) for k in env}
+        return os.environ.copy() if extra else None
 
     def _add_to_env(self, env, extra):
         for name in extra:
@@ -953,9 +948,7 @@ class ProcessConfiguration:
         command = [system_encode(item) for item in [command] + arguments]
         if not self.shell:
             return command
-        if arguments:
-            return subprocess.list2cmdline(command)
-        return command[0]
+        return subprocess.list2cmdline(command) if arguments else command[0]
 
     @property
     def popen_config(self):

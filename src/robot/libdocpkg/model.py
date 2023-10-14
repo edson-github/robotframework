@@ -60,7 +60,7 @@ class LibraryDoc:
             entries.append('Importing')
         if self.keywords:
             entries.append('Keywords')
-        return '\n'.join('- `%s`' % entry for entry in entries)
+        return '\n'.join(f'- `{entry}`' for entry in entries)
 
     @setter
     def doc_format(self, format):

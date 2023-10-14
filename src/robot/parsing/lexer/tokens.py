@@ -188,9 +188,7 @@ class Token:
 
     @property
     def end_col_offset(self) -> int:
-        if self.col_offset == -1:
-            return -1
-        return self.col_offset + len(self.value)
+        return -1 if self.col_offset == -1 else self.col_offset + len(self.value)
 
     def set_error(self, error: str):
         self.type = Token.ERROR
@@ -207,10 +205,10 @@ class Token:
         """
         if self.type not in Token.ALLOW_VARIABLES:
             return self._tokenize_no_variables()
-        variables = VariableIterator(self.value)
-        if not variables:
+        if variables := VariableIterator(self.value):
+            return self._tokenize_variables(variables)
+        else:
             return self._tokenize_no_variables()
-        return self._tokenize_variables(variables)
 
     def _tokenize_no_variables(self) -> 'Iterator[Token]':
         yield self

@@ -63,10 +63,10 @@ class _RunnableHandler:
 
     def _get_name(self, handler_name, handler_method):
         robot_name = getattr(handler_method, 'robot_name', None)
-        name = robot_name or printable_name(handler_name, code_style=True)
-        if not name:
+        if name := robot_name or printable_name(handler_name, code_style=True):
+            return name
+        else:
             raise DataError('Keyword name cannot be empty.')
-        return name
 
     def _parse_arguments(self, handler_method):
         raise NotImplementedError
@@ -156,10 +156,14 @@ class _PythonHandler(_RunnableHandler):
             lines, start_lineno = inspect.getsourcelines(inspect.unwrap(handler))
         except (TypeError, OSError, IOError):
             return -1
-        for increment, line in enumerate(lines):
-            if line.strip().startswith('def '):
-                return start_lineno + increment
-        return start_lineno
+        return next(
+            (
+                start_lineno + increment
+                for increment, line in enumerate(lines)
+                if line.strip().startswith('def ')
+            ),
+            start_lineno,
+        )
 
 
 class _DynamicHandler(_RunnableHandler):

@@ -207,8 +207,10 @@ class Namespace:
         return self._kw_store.get_library(name).get_instance()
 
     def get_library_instances(self):
-        return dict((name, lib.get_instance())
-                    for name, lib in self._kw_store.libraries.items())
+        return {
+            name: lib.get_instance()
+            for name, lib in self._kw_store.libraries.items()
+        }
 
     def reload_library(self, name_or_instance):
         library = self._kw_store.get_library(name_or_instance)
@@ -303,8 +305,7 @@ class KeywordStore:
         for index in range(1, len(parts)):
             prefix = ' '.join(parts[:index]).title()
             if prefix in prefixes:
-                runner = self._get_runner(' '.join(parts[index:]))
-                if runner:
+                if runner := self._get_runner(' '.join(parts[index:])):
                     runner = copy.copy(runner)
                     runner.name = name
                     return runner
@@ -320,8 +321,8 @@ class KeywordStore:
         handlers = self.user_keywords.handlers.get_handlers(name)
         if len(handlers) > 1:
             handlers = self._select_best_matches(handlers)
-            if len(handlers) > 1:
-                self._raise_multiple_keywords_found(handlers, name)
+        if len(handlers) > 1:
+            self._raise_multiple_keywords_found(handlers, name)
         runner = handlers[0].create_runner(name, self.languages)
         ctx = EXECUTION_CONTEXTS.current
         caller = ctx.user_keywords[-1] if ctx.user_keywords else ctx.test
@@ -337,21 +338,23 @@ class KeywordStore:
         return runner
 
     def _select_best_matches(self, handlers):
-        # "Normal" matches are considered exact and win over embedded matches.
-        normal = [hand for hand in handlers if not hand.supports_embedded_args]
-        if normal:
+        if normal := [
+            hand for hand in handlers if not hand.supports_embedded_args
+        ]:
             return normal
         matches = [hand for hand in handlers
                    if not self._is_worse_match_than_others(hand, handlers)]
         return matches or handlers
 
     def _is_worse_match_than_others(self, candidate, alternatives):
-        for other in alternatives:
-            if (candidate is not other
-                    and self._is_better_match(other, candidate)
-                    and not self._is_better_match(candidate, other)):
-                return True
-        return False
+        return any(
+            (
+                candidate is not other
+                and self._is_better_match(other, candidate)
+                and not self._is_better_match(candidate, other)
+            )
+            for other in alternatives
+        )
 
     def _is_better_match(self, candidate, other):
         # Embedded match is considered better than another if the other matches
@@ -359,10 +362,10 @@ class KeywordStore:
         return other.matches(candidate.name) and not candidate.matches(other.name)
 
     def _exists_in_resource_file(self, name, source):
-        for resource in self.resources.values():
-            if resource.source == source and name in resource.handlers:
-                return True
-        return False
+        return any(
+            resource.source == source and name in resource.handlers
+            for resource in self.resources.values()
+        )
 
     def _get_runner_from_resource_files(self, name):
         handlers = [handler for res in self.resources.values()
@@ -371,12 +374,12 @@ class KeywordStore:
             return None
         if len(handlers) > 1:
             handlers = self._filter_based_on_search_order(handlers)
-            if len(handlers) > 1:
-                handlers = self._prioritize_same_file_or_public(handlers)
-                if len(handlers) > 1:
-                    handlers = self._select_best_matches(handlers)
-                    if len(handlers) > 1:
-                        self._raise_multiple_keywords_found(handlers, name)
+        if len(handlers) > 1:
+            handlers = self._prioritize_same_file_or_public(handlers)
+        if len(handlers) > 1:
+            handlers = self._select_best_matches(handlers)
+        if len(handlers) > 1:
+            self._raise_multiple_keywords_found(handlers, name)
         return handlers[0].create_runner(name, self.languages)
 
     def _get_runner_from_libraries(self, name):
@@ -387,20 +390,19 @@ class KeywordStore:
         pre_run_message = None
         if len(handlers) > 1:
             handlers = self._filter_based_on_search_order(handlers)
-            if len(handlers) > 1:
-                handlers = self._select_best_matches(handlers)
-                if len(handlers) > 1:
-                    handlers, pre_run_message = self._filter_stdlib_handler(handlers)
-                    if len(handlers) > 1:
-                        self._raise_multiple_keywords_found(handlers, name)
+        if len(handlers) > 1:
+            handlers = self._select_best_matches(handlers)
+        if len(handlers) > 1:
+            handlers, pre_run_message = self._filter_stdlib_handler(handlers)
+        if len(handlers) > 1:
+            self._raise_multiple_keywords_found(handlers, name)
         runner = handlers[0].create_runner(name, self.languages)
         if pre_run_message:
             runner.pre_run_messages += (pre_run_message,)
         return runner
 
     def _prioritize_same_file_or_public(self, handlers):
-        user_keywords = EXECUTION_CONTEXTS.current.user_keywords
-        if user_keywords:
+        if user_keywords := EXECUTION_CONTEXTS.current.user_keywords:
             parent_source = user_keywords[-1].source
             matches = [h for h in handlers if h.source == parent_source]
             if matches:
@@ -410,8 +412,7 @@ class KeywordStore:
 
     def _filter_based_on_search_order(self, handlers):
         for name in self.search_order:
-            matches = [hand for hand in handlers if eq(name, hand.owner)]
-            if matches:
+            if matches := [hand for hand in handlers if eq(name, hand.owner)]:
                 return matches
         return handlers
 
@@ -476,7 +477,7 @@ class KeywordStore:
             if implicit:
                 error += ". Give the full name of the keyword you want to use"
         names = sorted(hand.full_name for hand in handlers)
-        raise KeywordError('\n    '.join([error+':'] + names))
+        raise KeywordError('\n    '.join([f'{error}:'] + names))
 
 
 class KeywordRecommendationFinder:

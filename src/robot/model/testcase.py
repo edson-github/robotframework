@@ -159,9 +159,7 @@ class TestCase(ModelObject, Generic[KW]):
     @property
     def full_name(self) -> str:
         """Test name prefixed with the full name of the parent suite."""
-        if not self.parent:
-            return self.name
-        return f'{self.parent.full_name}.{self.name}'
+        return self.name if not self.parent else f'{self.parent.full_name}.{self.name}'
 
     @property
     def longname(self) -> str:

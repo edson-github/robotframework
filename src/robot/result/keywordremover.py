@@ -142,8 +142,7 @@ class WaitUntilKeywordSucceedsRemover(_KeywordRemover):
             self._removal_message.set_if_removed(kw, before)
 
     def _remove_keywords(self, body):
-        keywords = body.filter(messages=False)
-        if keywords:
+        if keywords := body.filter(messages=False):
             include_from_end = 2 if keywords[-1].passed else 1
             for kw in keywords[:-include_from_end]:
                 if not self._warning_or_error(kw):
@@ -175,15 +174,14 @@ class RemovalMessage:
         self._message = message
 
     def set_if_removed(self, kw, len_before):
-        removed = len_before - len(kw.body)
-        if removed:
+        if removed := len_before - len(kw.body):
             self.set(kw, self._message % (removed, plural_or_not(removed)))
 
     def set(self, item, message=None):
         if not item.message:
             start = ''
         elif item.message.startswith('*HTML*'):
-            start = item.message[6:].strip() + '<hr>'
+            start = f'{item.message[6:].strip()}<hr>'
         else:
-            start = html_escape(item.message) + '<hr>'
+            start = f'{html_escape(item.message)}<hr>'
         item.message = f'*HTML* {start}<i>{message or self._message}</i>'

@@ -51,7 +51,7 @@ class JsonDumper:
             if dumper.handles(data, mapping):
                 dumper.dump(data, mapping)
                 return
-        raise ValueError('Dumping %s not supported.' % type(data))
+        raise ValueError(f'Dumping {type(data)} not supported.')
 
 
 class _Dumper:
@@ -74,7 +74,7 @@ class StringDumper(_Dumper):
                            ('\n', '\\n'), ('\r', '\\r'), ('</', '\\x3c/')]
 
     def dump(self, data, mapping):
-        self._write('"%s"' % (self._escape(data) if data else ''))
+        self._write(f""""{self._escape(data) if data else ''}\"""")
 
     def _escape(self, string):
         for search, replace in self._search_and_replace:

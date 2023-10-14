@@ -49,12 +49,11 @@ class Stat(Sortable):
         if include_elapsed:
             attrs['elapsed'] = elapsed_time_to_string(self.elapsed, include_millis=False)
         if exclude_empty:
-            attrs = dict((k, v) for k, v in attrs.items() if v not in ('', None))
+            attrs = {k: v for k, v in attrs.items() if v not in ('', None)}
         if values_as_strings:
-            attrs = dict((k, str(v) if v is not None else '')
-                         for k, v in attrs.items())
+            attrs = {k: str(v) if v is not None else '' for k, v in attrs.items()}
         if html_escape:
-            attrs = dict((k, self._html_escape(v)) for k, v in attrs.items())
+            attrs = {k: self._html_escape(v) for k, v in attrs.items()}
         return attrs
 
     def _get_custom_attrs(self):
@@ -139,16 +138,14 @@ class TagStat(Stat):
         """Returns additional information of the tag statistics
            are about. Either `combined` or an empty string.
         """
-        if self.combined:
-            return 'combined'
-        return ''
+        return 'combined' if self.combined else ''
 
     def _get_custom_attrs(self):
         return {'doc': self.doc, 'links': self._get_links_as_string(),
                 'info': self.info, 'combined': self.combined}
 
     def _get_links_as_string(self):
-        return ':::'.join('%s:%s' % (title, url) for url, title in self.links)
+        return ':::'.join(f'{title}:{url}' for url, title in self.links)
 
     @property
     def _sort_key(self):

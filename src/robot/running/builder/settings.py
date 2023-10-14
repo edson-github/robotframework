@@ -65,9 +65,7 @@ class TestDefaults:
         """
         if self._setup:
             return self._setup
-        if self.parent:
-            return self.parent.setup
-        return None
+        return self.parent.setup if self.parent else None
 
     @setup.setter
     def setup(self, setup: 'FixtureDict|None'):
@@ -81,9 +79,7 @@ class TestDefaults:
         """
         if self._teardown:
             return self._teardown
-        if self.parent:
-            return self.parent.teardown
-        return None
+        return self.parent.teardown if self.parent else None
 
     @teardown.setter
     def teardown(self, teardown: 'FixtureDict|None'):
@@ -103,9 +99,7 @@ class TestDefaults:
         """Default timeout."""
         if self._timeout:
             return self._timeout
-        if self.parent:
-            return self.parent.timeout
-        return None
+        return self.parent.timeout if self.parent else None
 
     @timeout.setter
     def timeout(self, timeout: 'str|None'):

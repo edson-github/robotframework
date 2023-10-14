@@ -20,8 +20,7 @@ class TestTestSuite(unittest.TestCase):
         assert_equal(dict(self.suite.metadata), {'M': 'v', 'n': 'w'})
 
     def test_set_metadata(self):
-        self.suite.metadata = {'a': '1', 'b': '1'}
-        self.suite.metadata['A'] = '2'
+        self.suite.metadata = {'a': '1', 'b': '1', 'A': '2'}
         assert_equal(dict(self.suite.metadata), {'a': '2', 'b': '1'})
 
     def test_create_and_add_suite(self):
@@ -163,9 +162,9 @@ class TestTestSuite(unittest.TestCase):
         assert_equal(root.has_tests, False)
         assert_equal(root.test_count, 0)
         assert_equal(list(root.all_tests), [])
-        for i in range(10):
+        for _ in range(10):
             suite = root.suites.create()
-            for j in range(100):
+            for _ in range(100):
                 suite.tests.create()
         assert_equal(root.has_tests, True)
         assert_equal(root.test_count, 1000)
@@ -198,7 +197,7 @@ class TestSuiteId(unittest.TestCase):
     def test_sub_suites(self):
         parent = TestSuite()
         for i in range(10):
-            assert_equal(parent.suites.create().id, 's1-s%s' % (i+1))
+            assert_equal(parent.suites.create().id, f's1-s{i + 1}')
         assert_equal(parent.suites[-1].suites.create().id, 's1-s10-s1')
 
     def test_id_is_dynamic(self):
@@ -226,7 +225,7 @@ class TestStringRepresentation(unittest.TestCase):
         for tc, expected in [(self.empty, "TestSuite(name='')"),
                              (self.ascii, "TestSuite(name='Kekkonen')"),
                              (self.non_ascii, "TestSuite(name='hyvä nimi')")]:
-            assert_equal(repr(tc), 'robot.model.' + expected)
+            assert_equal(repr(tc), f'robot.model.{expected}')
 
 
 if __name__ == '__main__':

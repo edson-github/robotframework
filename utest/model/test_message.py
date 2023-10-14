@@ -80,7 +80,7 @@ class TestStringRepresentation(unittest.TestCase):
         for tc, expected in [(self.empty, "Message(message='', level='INFO')"),
                              (self.ascii, "Message(message='Kekkonen', level='WARN')"),
                              (self.non_ascii, "Message(message='hyvä', level='INFO')")]:
-            assert_equal(repr(tc), 'robot.model.' + expected)
+            assert_equal(repr(tc), f'robot.model.{expected}')
 
 
 if __name__ == '__main__':

@@ -63,5 +63,4 @@ class PrettyRepr(PrettyPrinter):
 
 def _unrepresentable_object(item):
     from .error import get_error_message
-    return "<Unrepresentable object %s. Error: %s>" \
-           % (item.__class__.__name__, get_error_message())
+    return f"<Unrepresentable object {item.__class__.__name__}. Error: {get_error_message()}>"

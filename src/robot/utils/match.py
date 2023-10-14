@@ -66,9 +66,7 @@ class MultiMatcher(Iterable[Matcher]):
     def _ensure_iterable(self, patterns):
         if patterns is None:
             return ()
-        if is_string(patterns):
-            return (patterns,)
-        return patterns
+        return (patterns, ) if is_string(patterns) else patterns
 
     def match(self, string: str) -> bool:
         if self.matchers:

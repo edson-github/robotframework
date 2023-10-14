@@ -44,7 +44,7 @@ def cmdline2list(args, escaping=False):
     try:
         return list(lexer)
     except ValueError as err:
-        raise ValueError("Parsing '%s' failed: %s" % (args, err))
+        raise ValueError(f"Parsing '{args}' failed: {err}")
 
 
 class ArgumentParser:
@@ -147,8 +147,7 @@ class ArgumentParser:
 
     def _get_env_options(self):
         if self._env_options:
-            options = os.getenv(self._env_options)
-            if options:
+            if options := os.getenv(self._env_options):
                 return cmdline2list(options)
         return []
 
@@ -179,15 +178,17 @@ class ArgumentParser:
         if not opt.startswith('--'):
             return opt
         if '=' not in opt:
-            return '--%s' % opt.lower().replace('-', '')
+            return f"--{opt.lower().replace('-', '')}"
         opt, value = opt.split('=', 1)
-        return '--%s=%s' % (opt.lower().replace('-', ''), value)
+        return f"--{opt.lower().replace('-', '')}={value}"
 
     def _process_possible_argfile(self, args):
         options = ['--argumentfile']
-        for short_opt, long_opt in self._short_to_long.items():
-            if long_opt == 'argumentfile':
-                options.append('-'+short_opt)
+        options.extend(
+            f'-{short_opt}'
+            for short_opt, long_opt in self._short_to_long.items()
+            if long_opt == 'argumentfile'
+        )
         return ArgFileParser(options).process(args)
 
     def _process_opts(self, opt_tuple):
@@ -216,8 +217,7 @@ class ArgumentParser:
     def _glob_args(self, args):
         temp = []
         for path in args:
-            paths = sorted(glob.glob(path))
-            if paths:
+            if paths := sorted(glob.glob(path)):
                 temp.extend(paths)
             else:
                 temp.append(path)
@@ -232,8 +232,7 @@ class ArgumentParser:
 
     def _create_options(self, usage):
         for line in usage.splitlines():
-            res = self._opt_line_re.match(line)
-            if res:
+            if res := self._opt_line_re.match(line):
                 self._create_option(short_opts=[o[1] for o in res.group(1).split()],
                                     long_opt=res.group(3).lower().replace('-', ''),
                                     takes_arg=bool(res.group(4)),
@@ -243,17 +242,17 @@ class ArgumentParser:
         self._verify_long_not_already_used(long_opt, not takes_arg)
         for sopt in short_opts:
             if sopt in self._short_to_long:
-                self._raise_option_multiple_times_in_usage('-' + sopt)
+                self._raise_option_multiple_times_in_usage(f'-{sopt}')
             self._short_to_long[sopt] = long_opt
         if is_multi:
             self._multi_opts.append(long_opt)
         if takes_arg:
             long_opt += '='
-            short_opts = [sopt+':' for sopt in short_opts]
+            short_opts = [f'{sopt}:' for sopt in short_opts]
         else:
             if long_opt.startswith('no'):
                 long_opt = long_opt[2:]
-            self._long_opts.append('no' + long_opt)
+            self._long_opts.append(f'no{long_opt}')
             self._flag_opts.append(long_opt)
         self._long_opts.append(long_opt)
         self._short_opts += (''.join(short_opts))
@@ -263,9 +262,9 @@ class ArgumentParser:
             if opt.startswith('no'):
                 opt = opt[2:]
             self._verify_long_not_already_used(opt)
-            self._verify_long_not_already_used('no' + opt)
+            self._verify_long_not_already_used(f'no{opt}')
         elif opt in [o.rstrip('=') for o in self._long_opts]:
-            self._raise_option_multiple_times_in_usage('--' + opt)
+            self._raise_option_multiple_times_in_usage(f'--{opt}')
 
     def _get_pythonpath(self, paths):
         if is_string(paths):
@@ -286,7 +285,7 @@ class ArgumentParser:
         for item in tokens:
             item = item.replace('/', '\\')
             if drive and item.startswith('\\'):
-                ret.append('%s:%s' % (drive, item))
+                ret.append(f'{drive}:{item}')
                 drive = ''
                 continue
             if drive:
@@ -307,10 +306,10 @@ class ArgumentParser:
         raise Information(usage)
 
     def _raise_version(self):
-        raise Information('%s %s' % (self.name, self.version))
+        raise Information(f'{self.name} {self.version}')
 
     def _raise_option_multiple_times_in_usage(self, opt):
-        raise FrameworkError("Option '%s' multiple times in usage" % opt)
+        raise FrameworkError(f"Option '{opt}' multiple times in usage")
 
 
 class ArgLimitValidator:
@@ -357,7 +356,7 @@ class ArgFileParser:
 
     def _get_index(self, args):
         for opt in self._options:
-            start = opt + '=' if opt.startswith('--') else opt
+            start = f'{opt}=' if opt.startswith('--') else opt
             for index, arg in enumerate(args):
                 normalized_arg = (
                     '--' + arg.lower().replace('-', '') if opt.startswith('--') else arg
@@ -382,8 +381,7 @@ class ArgFileParser:
             with FileReader(path) as reader:
                 return reader.read()
         except (IOError, UnicodeError) as err:
-            raise DataError("Opening argument file '%s' failed: %s"
-                            % (path, err))
+            raise DataError(f"Opening argument file '{path}' failed: {err}")
 
     def _read_from_stdin(self):
         return console_decode(sys.__stdin__.read())

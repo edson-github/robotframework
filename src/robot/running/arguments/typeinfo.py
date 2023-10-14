@@ -151,9 +151,7 @@ class TypeInfo(metaclass=SetterAwareType):
             return cls('Union')
         if hint is Any:
             return cls('Any', hint)
-        if hint is Ellipsis:
-            return cls('...', hint)
-        return cls(str(hint))
+        return cls('...', hint) if hint is Ellipsis else cls(str(hint))
 
     @classmethod
     def from_type(cls, hint: type) -> 'TypeInfo':
@@ -182,9 +180,7 @@ class TypeInfo(metaclass=SetterAwareType):
                 infos.extend(info.nested)
             else:
                 infos.append(info)
-        if len(infos) == 1:
-            return infos[0]
-        return cls('Union', nested=infos)
+        return infos[0] if len(infos) == 1 else cls('Union', nested=infos)
 
     def convert(self, value: Any,
                 name: 'str|None' = None,
@@ -193,10 +189,12 @@ class TypeInfo(metaclass=SetterAwareType):
                 kind: str = 'Argument'):
         if isinstance(custom_converters, dict):
             custom_converters = CustomArgumentConverters.from_dict(custom_converters)
-        converter = TypeConverter.converter_for(self, custom_converters, languages)
-        if not converter:
+        if converter := TypeConverter.converter_for(
+            self, custom_converters, languages
+        ):
+            return converter.convert(value, name, kind)
+        else:
             raise TypeError(f"No converter found for '{self}'.")
-        return converter.convert(value, name, kind)
 
     def __str__(self):
         if self.is_union:

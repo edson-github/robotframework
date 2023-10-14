@@ -76,9 +76,7 @@ def _get_console_encoding(stream):
     encoding = getattr(stream, 'encoding', None)
     if isatty(stream):
         return encoding or CONSOLE_ENCODING
-    if PYTHONIOENCODING:
-        return PYTHONIOENCODING
-    return encoding or SYSTEM_ENCODING
+    return PYTHONIOENCODING if PYTHONIOENCODING else encoding or SYSTEM_ENCODING
 
 
 def system_decode(string):

@@ -108,7 +108,9 @@ class Filter(EmptySuiteRemover):
         return include is None and tests is None
 
     def __bool__(self) -> bool:
-        return bool(self.include_suites is not None or
-                    self.include_tests is not None or
-                    self.include_tags is not None or
-                    self.exclude_tags is not None)
+        return (
+            self.include_suites is not None
+            or self.include_tests is not None
+            or self.include_tags is not None
+            or self.exclude_tags is not None
+        )

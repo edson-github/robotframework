@@ -28,7 +28,7 @@ class ListenImports:
 
     def _pretty(self, entry):
         if isinstance(entry, list):
-            return '[%s]' % ', '.join(entry)
+            return f"[{', '.join(entry)}]"
         if isinstance(entry, basestring) and os.path.isabs(entry):
             entry = entry.replace('$py.class', '.py').replace('.pyc', '.py')
             tokens = entry.split(os.sep)

@@ -53,10 +53,10 @@ class UserLibrary:
             raise DataError('User keyword cannot be empty.')
         if not kw.name:
             raise DataError('User keyword name cannot be empty.')
-        embedded = EmbeddedArguments.from_name(kw.name)
-        if not embedded:
+        if embedded := EmbeddedArguments.from_name(kw.name):
+            return EmbeddedArgumentsHandler(kw, self.name, embedded)
+        else:
             return UserKeywordHandler(kw, self.name)
-        return EmbeddedArgumentsHandler(kw, self.name, embedded)
 
     def _log_creating_failed(self, handler, error):
         LOGGER.error(f"Error in file '{self.source}' on line {handler.lineno}: "

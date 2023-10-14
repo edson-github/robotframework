@@ -71,34 +71,33 @@ class ListenOutputs:
         self._out_file('XUnit', path)
 
     def _out_file(self, name, path):
-        print('%s: %s' % (name, path))
+        print(f'{name}: {path}')
 
 
 class ListenAll(ListenOutputs):
     ROBOT_LISTENER_API_VERSION = '2'
 
     def start_suite(self, name, attrs):
-        print("SUITE START: %s '%s'" % (name, attrs['doc']))
+        print(f"SUITE START: {name} '{attrs['doc']}'")
 
     def start_test(self, name, attrs):
-        print("TEST START: %s '%s' %s" % (name, attrs['doc'],
-                                          ', '.join(attrs['tags'])))
+        print(f"TEST START: {name} '{attrs['doc']}' {', '.join(attrs['tags'])}")
 
     def start_keyword(self, name, attrs):
         args = [str(arg) for arg in attrs['args']]
-        print("KW START: %s %s" % (name, args))
+        print(f"KW START: {name} {args}")
 
     def end_keyword(self, name, attrs):
-        print("KW END: %s" % attrs['status'])
+        print(f"KW END: {attrs['status']}")
 
     def end_test(self, name, attrs):
         if attrs['status'] == 'PASS':
             print('TEST END: PASS')
         else:
-            print("TEST END: %s %s" % (attrs['status'], attrs['message']))
+            print(f"TEST END: {attrs['status']} {attrs['message']}")
 
     def end_suite(self, name, attrs):
-        print('SUITE END: %s %s' % (attrs['status'], attrs['statistics']))
+        print(f"SUITE END: {attrs['status']} {attrs['statistics']}")
 
     def close(self):
         print('Closing...')
@@ -134,7 +133,7 @@ class TestListeners(unittest.TestCase):
 
     def test_end_suite(self):
         self.listeners.end_suite(SuiteMock())
-        self._assert_output('SUITE END: PASS ' + self.stat_message)
+        self._assert_output(f'SUITE END: PASS {self.stat_message}')
 
     def test_output_file(self):
         self.listeners.output_file('output', 'path/to/output')

@@ -32,7 +32,7 @@ class ConsoleViewer:
     @classmethod
     def validate_command(cls, command, args):
         if not cls.handles(command):
-            raise DataError("Unknown command '%s'." % command)
+            raise DataError(f"Unknown command '{command}'.")
         if command.lower() == 'version' and args:
             raise DataError("Command 'version' does not take arguments.")
 
@@ -41,7 +41,7 @@ class ConsoleViewer:
         getattr(self, command.lower())(*args)
 
     def list(self, *patterns):
-        for kw in self._keywords.search('*%s*' % p for p in patterns):
+        for kw in self._keywords.search(f'*{p}*' for p in patterns):
             self._console(kw.name)
 
     def show(self, *names):
@@ -72,7 +72,7 @@ class ConsoleViewer:
     def _show_keyword(self, kw, show_name=True):
         if show_name:
             self._header(kw.name, underline='-')
-        self._data([('Arguments', '[%s]' % str(kw.args))])
+        self._data([('Arguments', f'[{str(kw.args)}]')])
         self._doc(kw.doc)
 
     def _header(self, name, underline):
@@ -82,7 +82,7 @@ class ConsoleViewer:
         ljust = max(len(name) for name, _ in items) + 3
         for name, value in items:
             if value:
-                text = '%s%s' % ((name+':').ljust(ljust), value)
+                text = f"{f'{name}:'.ljust(ljust)}{value}"
                 self._console(self._wrap(text, subsequent_indent=' '*ljust))
 
     def _doc(self, doc):

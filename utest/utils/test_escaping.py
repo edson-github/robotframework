@@ -160,8 +160,8 @@ class TestEscape(unittest.TestCase):
         for inp in ['ELSE', 'ELSE IF', 'AND', 'WITH NAME', 'AS']:
             assert_equal(escape(inp), '\\' + inp)
             assert_equal(escape(inp.lower()), inp.lower())
-            assert_equal(escape('other' + inp), 'other' + inp)
-            assert_equal(escape(inp + ' '), inp + ' ')
+            assert_equal(escape(f'other{inp}'), f'other{inp}')
+            assert_equal(escape(f'{inp} '), f'{inp} ')
 
 
 class TestSplitFromEquals(unittest.TestCase):

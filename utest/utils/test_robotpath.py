@@ -66,12 +66,12 @@ class TestAbspathNormpath(unittest.TestCase):
         for inp, exp in inputs():
             yield inp, exp
             if inp not in ['', os.sep]:
-                for ext in [os.sep, os.sep+'.', os.sep+'.'+os.sep]:
+                for ext in [os.sep, f'{os.sep}.', f'{os.sep}.{os.sep}']:
                     yield inp + ext, exp
             if inp.endswith(os.sep):
-                for ext in ['.', '.'+os.sep, '.'+os.sep+'.']:
+                for ext in ['.', f'.{os.sep}', f'.{os.sep}.']:
                     yield inp + ext, exp
-                yield inp + 'foo' + os.sep + '..', exp
+                yield (f'{inp}foo{os.sep}..', exp)
 
     def _posix_inputs(self):
         return [('/tmp/', '/tmp'),
@@ -86,11 +86,15 @@ class TestAbspathNormpath(unittest.TestCase):
                   ('c:\\Non\\Existing\\..', 'c:\\Non')]
         for x in 'ABCDEFGHIJKLMNOPQRSTUVXYZ':
             base = f'{x}:\\'
-            inputs.append((base, base))
-            inputs.append((base.lower(), base.lower()))
-            inputs.append((base[:2], base))
-            inputs.append((base[:2].lower(), base.lower()))
-            inputs.append((base+'\\foo\\..\\.\\BAR\\\\', base+'BAR'))
+            inputs.extend(
+                (
+                    (base, base),
+                    (base.lower(), base.lower()),
+                    (base[:2], base),
+                    (base[:2].lower(), base.lower()),
+                    (base + '\\foo\\..\\.\\BAR\\\\', f'{base}BAR'),
+                )
+            )
         inputs += [(inp.replace('/', '\\'), exp) for inp, exp in inputs]
         for inp, exp in self._generic_inputs():
             exp = exp.replace('/', '\\')
@@ -138,17 +142,19 @@ class TestGetLinkPath(unittest.TestCase):
 
     def _get_basic_inputs(self):
         directory = os.path.dirname(__file__)
-        inputs = [(directory, __file__, os.path.basename(__file__)),
-                  (directory, directory, '.'),
-                  (directory, directory + '/', '.'),
-                  (directory, directory + '//', '.'),
-                  (directory, directory + '///', '.'),
-                  (directory, directory + '/trailing/part', 'trailing/part'),
-                  (directory, directory + '//trailing//part', 'trailing/part'),
-                  (directory, directory + '/..', '..'),
-                  (directory, directory + '/../X', '../X'),
-                  (directory, directory + '/./.././/..', '../..'),
-                  (directory, '.', os.path.relpath('.', directory).replace(os.sep, '/'))]
+        inputs = [
+            (directory, __file__, os.path.basename(__file__)),
+            (directory, directory, '.'),
+            (directory, f'{directory}/', '.'),
+            (directory, f'{directory}//', '.'),
+            (directory, f'{directory}///', '.'),
+            (directory, f'{directory}/trailing/part', 'trailing/part'),
+            (directory, f'{directory}//trailing//part', 'trailing/part'),
+            (directory, f'{directory}/..', '..'),
+            (directory, f'{directory}/../X', '../X'),
+            (directory, f'{directory}/./.././/..', '../..'),
+            (directory, '.', os.path.relpath('.', directory).replace(os.sep, '/')),
+        ]
         platform_inputs = (self._posix_inputs() if os.sep == '/' else
                            self._windows_inputs())
         return inputs + platform_inputs

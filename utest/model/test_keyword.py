@@ -87,7 +87,7 @@ class TestKeyword(unittest.TestCase):
              "Keyword(name='ä', args=('å',), assign=('${ã}',))")
         ]:
             assert_equal(str(kw), exp_str)
-            assert_equal(repr(kw), 'robot.model.' + exp_repr)
+            assert_equal(repr(kw), f'robot.model.{exp_repr}')
 
     def test_slots(self):
         assert_raises(AttributeError, setattr, Keyword(), 'attr', 'value')

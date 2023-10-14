@@ -138,10 +138,9 @@ class Screenshot:
         """
         path = self._norm_path(path)
         if not os.path.isdir(path):
-            raise RuntimeError("Directory '%s' does not exist." % path)
-        old = self._screenshot_dir
+            raise RuntimeError(f"Directory '{path}' does not exist.")
         self._given_screenshot_dir = path
-        return old
+        return self._screenshot_dir
 
     def take_screenshot(self, name="screenshot", width="800px"):
         """Takes a screenshot in JPEG format and embeds it into the log file.
@@ -190,8 +189,9 @@ class Screenshot:
 
     def _screenshot_to_file(self, path):
         path = self._validate_screenshot_path(path)
-        logger.debug('Using %s module/tool for taking screenshot.'
-                     % self._screenshot_taker.module)
+        logger.debug(
+            f'Using {self._screenshot_taker.module} module/tool for taking screenshot.'
+        )
         try:
             self._screenshot_taker(path)
         except:
@@ -219,8 +219,9 @@ class Screenshot:
 
     def _embed_screenshot(self, path, width):
         link = get_link_path(path, self._log_dir)
-        logger.info('<a href="%s"><img src="%s" width="%s"></a>'
-                    % (link, link, width), html=True)
+        logger.info(
+            f'<a href="{link}"><img src="{link}" width="{width}"></a>', html=True
+        )
 
     def _link_screenshot(self, path):
         link = get_link_path(path, self._log_dir)
@@ -245,15 +246,15 @@ class ScreenshotTaker:
         if not self:
             print("Cannot take screenshots.")
             return False
-        print("Using '%s' to take screenshot." % self.module)
+        print(f"Using '{self.module}' to take screenshot.")
         if not path:
             print("Not taking test screenshot.")
             return True
-        print("Taking test screenshot to '%s'." % path)
+        print(f"Taking test screenshot to '{path}'.")
         try:
             self(path)
         except:
-            print("Failed: %s" % get_error_message())
+            print(f"Failed: {get_error_message()}")
             return False
         else:
             print("Success!")
@@ -272,11 +273,10 @@ class ScreenshotTaker:
                              'pil': (ImageGrab, self._pil_screenshot),
                              'scrot': (self._scrot, self._scrot_screenshot)}
         if name not in screenshot_takers:
-            raise RuntimeError("Invalid screenshot module or tool '%s'." % name)
+            raise RuntimeError(f"Invalid screenshot module or tool '{name}'.")
         supported, screenshot_taker = screenshot_takers[name]
         if not supported:
-            raise RuntimeError("Screenshot module or tool '%s' not installed."
-                               % name)
+            raise RuntimeError(f"Screenshot module or tool '{name}' not installed.")
         return screenshot_taker
 
     def _get_default_screenshot_taker(self):
@@ -333,11 +333,12 @@ class ScreenshotTaker:
             raise RuntimeError('Taking screenshot failed.')
         width, height = window.get_size()
         pb = gdk.Pixbuf(gdk.COLORSPACE_RGB, False, 8, width, height)
-        pb = pb.get_from_drawable(window, window.get_colormap(),
-                                  0, 0, 0, 0, width, height)
-        if not pb:
+        if pb := pb.get_from_drawable(
+            window, window.get_colormap(), 0, 0, 0, 0, width, height
+        ):
+            pb.save(path, 'jpeg')
+        else:
             raise RuntimeError('Taking screenshot failed.')
-        pb.save(path, 'jpeg')
 
     def _pil_screenshot(self, path):
         ImageGrab.grab().save(path, 'JPEG')
@@ -349,8 +350,9 @@ class ScreenshotTaker:
 
 if __name__ == "__main__":
     if len(sys.argv) not in [2, 3]:
-        sys.exit("Usage: %s <path>|test [wxpython|pygtk|pil|scrot]"
-                 % os.path.basename(sys.argv[0]))
+        sys.exit(
+            f"Usage: {os.path.basename(sys.argv[0])} <path>|test [wxpython|pygtk|pil|scrot]"
+        )
     path = sys.argv[1] if sys.argv[1] != 'test' else None
     module = sys.argv[2] if len(sys.argv) > 2 else None
     ScreenshotTaker(module).test(path)

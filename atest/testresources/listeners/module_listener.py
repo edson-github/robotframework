@@ -6,7 +6,7 @@ ROBOT_LISTENER_API_VERSION = 2
 
 
 def start_suite(name, attrs):
-    metastr = ' '.join('%s: %s' % (k, v) for k, v in attrs['metadata'].items())
+    metastr = ' '.join(f'{k}: {v}' for k, v in attrs['metadata'].items())
     OUTFILE.write("SUITE START: %s (%s) '%s' [%s]\n"
                   % (name, attrs['id'], attrs['doc'], metastr))
 
@@ -17,15 +17,9 @@ def start_test(name, attrs):
                      tags))
 
 def start_keyword(name, attrs):
-    if attrs['assign']:
-        assign = '%s = ' % ', '.join(attrs['assign'])
-    else:
-        assign = ''
-    name = name + ' ' if name else ''
-    if attrs['args']:
-        args = '%s ' % [str(a) for a in attrs['args']]
-    else:
-        args = ''
+    assign = f"{', '.join(attrs['assign'])} = " if attrs['assign'] else ''
+    name = f'{name} ' if name else ''
+    args = f"{[str(a) for a in attrs['args']]} " if attrs['args'] else ''
     OUTFILE.write("%s START: %s%s%s(line %d)\n"
                   % (attrs['type'], assign, name, args, attrs['lineno']))
 

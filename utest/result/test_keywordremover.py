@@ -35,11 +35,11 @@ class TestWUKSRemover(unittest.TestCase):
         kw = suite.tests.create().body.create_keyword(
             owner='BuiltIn', name='Wait Until Keyword Succeeds'
         )
-        for i in range(failing):
+        for _ in range(failing):
             kw.body.create_keyword(status='FAIL')
-        for i in range(passing):
+        for _ in range(passing):
             kw.body.create_keyword(status='PASS')
-        for i in range(messages):
+        for _ in range(messages):
             kw.body.create_message()
         suite.visit(WaitUntilKeywordSucceedsRemover())
         assert_equal(len(kw.body), expected)

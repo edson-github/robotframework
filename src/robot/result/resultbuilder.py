@@ -161,15 +161,14 @@ class ExecutionResultBuilder:
                     elif by_type and type_match(tag):
                         started = 0
                     tags = []
-            else:
-                if tag in containers:
-                    inside -= 1
-                elif by_tags and inside and started < 0 and tag == 'tag':
-                    tags.append(elem.text or '')
-                    if tags_match(tags):
-                        started = 0
-                elif started == 0 and tag == 'status':
-                    elem.text = self._create_flattened_message(elem.text)
+            elif tag in containers:
+                inside -= 1
+            elif by_tags and inside and started < 0 and tag == 'tag':
+                tags.append(elem.text or '')
+                if tags_match(tags):
+                    started = 0
+            elif started == 0 and tag == 'status':
+                elem.text = self._create_flattened_message(elem.text)
             if started <= 0 or tag == 'msg':
                 yield event, elem
             else:
@@ -181,9 +180,9 @@ class ExecutionResultBuilder:
         if not original:
             start = ''
         elif original.startswith('*HTML*'):
-            start = original[6:].strip() + '<hr>'
+            start = f'{original[6:].strip()}<hr>'
         else:
-            start = html_escape(original) + '<hr>'
+            start = f'{html_escape(original)}<hr>'
         return f'*HTML* {start}<i>Content flattened.</i>'
 
     def _get_matcher(self, matcher_class, flattened):

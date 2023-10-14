@@ -236,9 +236,7 @@ class Language:
         if cls is Language:
             return cls.__dict__['code']
         code = cast(type, cls).__name__.lower()
-        if len(code) < 3:
-            return code
-        return f'{code[:2]}-{code[2:].upper()}'
+        return code if len(code) < 3 else f'{code[:2]}-{code[2:].upper()}'
 
     @classproperty
     def name(cls) -> str:

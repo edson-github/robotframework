@@ -10,7 +10,7 @@ class DynamicLibraryWithoutArgspec:
         print(x)
 
     def do_something_else(self, x, y=0):
-        print('x: %s, y: %s' % (x, y))
+        print(f'x: {x}, y: {y}')
 
     def do_something_third(self, a, b=2, c=3):
         print(a, b, c)

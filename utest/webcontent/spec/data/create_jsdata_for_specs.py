@@ -22,7 +22,7 @@ def create(testdata, target, split_log=False):
     target = join(BASEDIR, target)
     run_robot(testdata)
     create_jsdata(target, split_log)
-    inplace_replace_all(target, 'window.output', 'window.' + output_name)
+    inplace_replace_all(target, 'window.output', f'window.{output_name}')
 
 
 def run_robot(testdata, output=OUTPUT):

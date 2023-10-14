@@ -565,9 +565,9 @@ class XML:
 
     def _wrong_number_of_matches(self, count, xpath):
         if not count:
-            return "No element matching '%s' found." % xpath
+            return f"No element matching '{xpath}' found."
         if count == 1:
-            return "One element matching '%s' found." % xpath
+            return f"One element matching '{xpath}' found."
         return "Multiple elements (%d) matching '%s' found." % (count, xpath)
 
     def get_elements(self, source, xpath):
@@ -648,8 +648,7 @@ class XML:
         See also `Element Should Exist` as well as `Get Element Count`
         that this keyword uses internally.
         """
-        count = self.get_element_count(source, xpath)
-        if count:
+        if count := self.get_element_count(source, xpath):
             self._raise_wrong_number_of_matches(count, xpath, message)
 
     def get_element_text(self, source, xpath='.', normalize_whitespace=False):
@@ -693,8 +692,7 @@ class XML:
         if element.text:
             yield element.text
         for child in element:
-            for text in self._yield_texts(child, top=False):
-                yield text
+            yield from self._yield_texts(child, top=False)
         if element.tail and not top:
             yield element.tail
 
@@ -854,7 +852,7 @@ class XML:
         """
         attr = self.get_element_attribute(source, name, xpath)
         if attr is None:
-            raise AssertionError("Attribute '%s' does not exist." % name)
+            raise AssertionError(f"Attribute '{name}' does not exist.")
         should_match(attr, pattern, message, values=False)
 
     def element_should_not_have_attribute(self, source, name, xpath='.', message=None):
@@ -1365,8 +1363,7 @@ class XML:
                 output.write(self.etree.tostring(tree, **config))
             else:
                 tree.write(output, **config)
-        logger.info('XML saved to <a href="file://%s">%s</a>.' % (path, path),
-                    html=True)
+        logger.info(f'XML saved to <a href="file://{path}">{path}</a>.', html=True)
 
     def evaluate_xpath(self, source, expression, context='.'):
         """Evaluates the given xpath expression and returns results.
@@ -1482,7 +1479,7 @@ class ElementComparator:
 
     def _compare(self, actual, expected, message, location, comparator=None):
         if location.is_not_root:
-            message = "%s at '%s'" % (message, location.path)
+            message = f"{message} at '{location.path}'"
         if not comparator:
             comparator = self._comparator
         comparator(actual, expected, message)
@@ -1491,8 +1488,12 @@ class ElementComparator:
         self._compare(sorted(actual.attrib), sorted(expected.attrib),
                       'Different attribute names', location, should_be_equal)
         for key in actual.attrib:
-            self._compare(actual.attrib[key], expected.attrib[key],
-                          "Different value for attribute '%s'" % key, location)
+            self._compare(
+                actual.attrib[key],
+                expected.attrib[key],
+                f"Different value for attribute '{key}'",
+                location,
+            )
 
     def _compare_texts(self, actual, expected, location):
         self._compare(self._text(actual.text), self._text(expected.text),
@@ -1525,4 +1526,4 @@ class Location:
         else:
             self._children[tag] += 1
             tag += '[%d]' % self._children[tag]
-        return Location('%s/%s' % (self.path, tag), is_root=False)
+        return Location(f'{self.path}/{tag}', is_root=False)

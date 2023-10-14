@@ -22,7 +22,7 @@ class RunKeywordLibrary:
     def _fails(self, args):
         if not args:
             raise AssertionError('Failure')
-        raise AssertionError('Failure: %s' % ' '.join(args))
+        raise AssertionError(f"Failure: {' '.join(args)}")
 
 
 class GlobalRunKeywordLibrary(RunKeywordLibrary):

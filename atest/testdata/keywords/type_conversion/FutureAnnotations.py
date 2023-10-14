@@ -6,7 +6,7 @@ from typing import List
 
 def concrete_types(a: int, b: bool, c: list):
     assert a == 42, repr(a)
-    assert b is False, repr(b)
+    assert not b, repr(b)
     assert c == [1, 'kaksi'], repr(c)
 
 

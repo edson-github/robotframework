@@ -68,12 +68,12 @@ class TestKeywordNotification(unittest.TestCase):
         self._verify()
 
     def _write_marker(self, status='PASS', count=1):
-        for i in range(count):
+        for _ in range(count):
             self.console.start_keyword(Stub(), Stub())
             self.console.end_keyword(Stub(), Stub(status=status))
 
     def _verify(self, after='', before=''):
-        assert_equal(str(self.stream), '%sX :: D  %s' % (before, after))
+        assert_equal(str(self.stream), f'{before}X :: D  {after}')
 
 
 class Stub:

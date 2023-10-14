@@ -92,15 +92,19 @@ class For(BodyItem):
 
     def __str__(self):
         parts = ['FOR', *self.assign, self.flavor, *self.values]
-        for name, value in [('start', self.start),
-                            ('mode', self.mode),
-                            ('fill', self.fill)]:
-            if value is not None:
-                parts.append(f'{name}={value}')
+        parts.extend(
+            f'{name}={value}'
+            for name, value in [
+                ('start', self.start),
+                ('mode', self.mode),
+                ('fill', self.fill),
+            ]
+            if value is not None
+        )
         return '    '.join(parts)
 
     def _include_in_repr(self, name: str, value: Any) -> bool:
-        return value is not None or name in ('assign', 'flavor', 'values')
+        return value is not None or name in {'assign', 'flavor', 'values'}
 
 
 @Body.register
@@ -197,9 +201,7 @@ class IfBranch(BodyItem):
     def __str__(self) -> str:
         if self.type == self.IF:
             return f'IF    {self.condition}'
-        if self.type == self.ELSE_IF:
-            return f'ELSE IF    {self.condition}'
-        return 'ELSE'
+        return f'ELSE IF    {self.condition}' if self.type == self.ELSE_IF else 'ELSE'
 
 
 @Body.register
@@ -334,10 +336,14 @@ class Try(BodyItem):
 
     @property
     def else_branch(self) -> 'TryBranch|None':
-        for branch in self.body:
-            if branch.type == BodyItem.ELSE:
-                return cast(TryBranch, branch)
-        return None
+        return next(
+            (
+                cast(TryBranch, branch)
+                for branch in self.body
+                if branch.type == BodyItem.ELSE
+            ),
+            None,
+        )
 
     @property
     def finally_branch(self):
@@ -398,7 +404,7 @@ class Var(BodyItem):
         return '    '.join(parts)
 
     def _include_in_repr(self, name: str, value: Any) -> bool:
-        return value is not None or name in ('name', 'value')
+        return value is not None or name in {'name', 'value'}
 
 
 @Body.register

@@ -53,9 +53,7 @@ class LibraryDocBuilder:
 
     def _normalize_library_path(self, library):
         path = library.replace('/', os.sep)
-        if os.path.exists(path):
-            return os.path.abspath(path)
-        return library
+        return os.path.abspath(path) if os.path.exists(path) else library
 
     def _get_doc(self, lib):
         return lib.doc or f"Documentation for library ``{lib.name}``."
@@ -71,8 +69,7 @@ class LibraryDocBuilder:
             for arg in kw.args:
                 kw.type_docs[arg.name] = {}
                 for type_info in self._yield_type_info(arg.type):
-                    type_doc = TypeDoc.for_type(type_info, custom_converters)
-                    if type_doc:
+                    if type_doc := TypeDoc.for_type(type_info, custom_converters):
                         kw.type_docs[arg.name][type_info.name] = type_doc.name
                         type_docs.setdefault(type_doc, set()).add(kw.name)
         for type_doc, usages in type_docs.items():
@@ -172,7 +169,7 @@ class KeywordDocBuilder:
             result += r'%s\%s{%s}' % (match.before, match.identifier,
                                       self._escape_variables(match.base))
             for item in match.items:
-                result += '[%s]' % self._escape_variables(item)
+                result += f'[{self._escape_variables(item)}]'
             match = search_variable(match.after)
         return result + match.string
 

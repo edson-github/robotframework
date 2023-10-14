@@ -209,6 +209,8 @@ END IF/ELSE ROOT
         suite.tests.create().body.create_continue().body.create_message(message='C')
         suite.tests.create().body.create_break().body.create_keyword(name='B')
 
+
+
         class Visitor(SuiteVisitor):
             visited_return = visited_continue = visited_break = False
             visited_return_body = visited_continue_body = visited_break_body = False
@@ -223,14 +225,16 @@ END IF/ELSE ROOT
                 self.visited_break = True
 
             def start_keyword(self, keyword):
-                if keyword.name == 'R':
-                    self.visited_return_body = True
                 if keyword.name == 'B':
                     self.visited_break_body = True
+
+                elif keyword.name == 'R':
+                    self.visited_return_body = True
 
             def visit_message(self, msg):
                 if msg.message == 'C':
                     self.visited_continue_body = True
+
 
         visitor = Visitor()
         suite.visit(visitor)

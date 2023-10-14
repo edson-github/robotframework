@@ -50,8 +50,8 @@ class JsResultWriter:
 
     def _write_strings(self, strings):
         variable = self._output_var(self._strings_key)
-        self._write('%s = []' % variable)
-        prefix = '%s = %s.concat(' % (variable, variable)
+        self._write(f'{variable} = []')
+        prefix = f'{variable} = {variable}.concat('
         postfix = ');\n'
         threshold = self._split_threshold
         for index in range(0, len(strings), threshold):
@@ -59,15 +59,14 @@ class JsResultWriter:
 
     def _write_data(self, data):
         for key in data:
-            self._write_json('%s = ' % self._output_var(key), data[key])
+            self._write_json(f'{self._output_var(key)} = ', data[key])
 
     def _write_settings_and_end_output_block(self, settings):
-        self._write_json('%s = ' % self._settings_attr, settings,
-                         separator=False)
+        self._write_json(f'{self._settings_attr} = ', settings, separator=False)
         self._write(self._end_block, postfix='', separator=False)
 
     def _output_var(self, key):
-        return '%s["%s"]' % (self._output_attr, key)
+        return f'{self._output_attr}["{key}"]'
 
 
 class SuiteWriter:
@@ -79,7 +78,7 @@ class SuiteWriter:
     def write(self, suite, variable):
         mapping = {}
         self._write_parts_over_threshold(suite, mapping)
-        self._write_json('%s = ' % variable, suite, mapping=mapping)
+        self._write_json(f'{variable} = ', suite, mapping=mapping)
 
     def _write_parts_over_threshold(self, data, mapping):
         if not isinstance(data, tuple):
@@ -93,7 +92,7 @@ class SuiteWriter:
 
     def _write_part(self, data, mapping):
         part_name = 'window.sPart%d' % len(mapping)
-        self._write_json('%s = ' % part_name, data, mapping=mapping)
+        self._write_json(f'{part_name} = ', data, mapping=mapping)
         mapping[data] = part_name
 
 
@@ -105,4 +104,4 @@ class SplitLogWriter:
     def write(self, keywords, strings, index, notify):
         self._writer.write_json('window.keywords%d = ' % index, keywords)
         self._writer.write_json('window.strings%d = ' % index, strings)
-        self._writer.write('window.fileLoading.notify("%s")' % notify)
+        self._writer.write(f'window.fileLoading.notify("{notify}")')

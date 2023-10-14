@@ -66,8 +66,14 @@ class TotalStatistics:
         total, end, passed, failed, skipped = self._get_counts()
         template = '%d %s%s, %d passed, %d failed'
         if skipped:
-            return ((template + ', %d skipped')
-                    % (total, test_or_task, end, passed, failed, skipped))
+            return f'{template}, %d skipped' % (
+                total,
+                test_or_task,
+                end,
+                passed,
+                failed,
+                skipped,
+            )
         return template % (total, test_or_task, end, passed, failed)
 
     def _get_counts(self):

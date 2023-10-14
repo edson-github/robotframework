@@ -48,7 +48,7 @@ class TestItemLists(unittest.TestCase):
 
     def test_extend_with_generator(self):
         items = ItemList(str)
-        items.extend((c for c in 'Hello, world!'))
+        items.extend(iter('Hello, world!'))
         assert_equal(list(items), list('Hello, world!'))
 
     def test_insert(self):
@@ -252,7 +252,7 @@ class TestItemLists(unittest.TestCase):
                 chars.insert(2, 'c')
             if c == 'c':
                 chars.append('e')
-            assert_true(c in 'abcde', '%s was unexpected here!' % c)
+            assert_true(c in 'abcde', f'{c} was unexpected here!')
         assert_equal(list(chars), list('abcde'))
 
     def test_count(self):
@@ -291,13 +291,13 @@ class TestItemLists(unittest.TestCase):
         for c in reversed(chars):
             if c == 'a':
                 chars.remove('x')
-            if c == 'b':
+            elif c == 'b':
                 chars.insert(-2, 'c')
-            if c == 'c':
+            elif c == 'c':
                 chars.pop(0)
-            if c == 'd':
+            elif c == 'd':
                 chars.insert(0, 'e')
-            assert_true(c in 'abcde', '%s was unexpected here!' % c)
+            assert_true(c in 'abcde', f'{c} was unexpected here!')
         assert_equal(list(chars), list('edcba'))
 
     def test_comparisons(self):
@@ -362,7 +362,7 @@ class TestItemLists(unittest.TestCase):
         items = ItemList(int, items=[1, 2])
         items += (3, 4)
         items += [5]
-        items += (i for i in (6, 7))
+        items += iter((6, 7))
         items += ItemList(int, items=[8, 9])
         items += ItemList(int)
         assert_equal(items, ItemList(int, items=[1, 2, 3, 4, 5, 6, 7, 8, 9]))

@@ -37,7 +37,7 @@ class TestStringRepresentations(unittest.TestCase):
              "For(assign=('${ü}',), flavor='IN', values=('föö',))")
         ]:
             assert_equal(str(for_), exp_str)
-            assert_equal(repr(for_), 'robot.model.' + exp_repr)
+            assert_equal(repr(for_), f'robot.model.{exp_repr}')
 
     def test_while(self):
         for while_, exp_str, exp_repr in [
@@ -49,7 +49,7 @@ class TestStringRepresentations(unittest.TestCase):
              "While(condition='$x', limit='100')")
         ]:
             assert_equal(str(while_), exp_str)
-            assert_equal(repr(while_), 'robot.model.' + exp_repr)
+            assert_equal(repr(while_), f'robot.model.{exp_repr}')
 
     def test_if(self):
         for if_, exp_str, exp_repr in [
@@ -70,7 +70,7 @@ class TestStringRepresentations(unittest.TestCase):
              "IfBranch(type='IF', condition='$x == \"äiti\"')"),
         ]:
             assert_equal(str(if_), exp_str)
-            assert_equal(repr(if_), 'robot.model.' + exp_repr)
+            assert_equal(repr(if_), f'robot.model.{exp_repr}')
 
     def test_try(self):
         for try_, exp_str, exp_repr in [
@@ -100,7 +100,7 @@ class TestStringRepresentations(unittest.TestCase):
              "TryBranch(type='FINALLY')"),
         ]:
             assert_equal(str(try_), exp_str)
-            assert_equal(repr(try_), 'robot.model.' + exp_repr)
+            assert_equal(repr(try_), f'robot.model.{exp_repr}')
 
     def test_var(self):
         for var, exp_str, exp_repr in [
@@ -118,18 +118,18 @@ class TestStringRepresentations(unittest.TestCase):
              "Var(name='@{list}', value=('x', 'y'), scope='SUITE')")
         ]:
             assert_equal(str(var), exp_str)
-            assert_equal(repr(var), 'robot.model.' + exp_repr)
+            assert_equal(repr(var), f'robot.model.{exp_repr}')
 
     def test_return_continue_break(self):
         for cls in Return, Continue, Break:
             assert_equal(str(cls()), cls.__name__.upper())
             assert_equal(repr(cls()), f'robot.model.{cls.__name__}()')
         assert_equal(str(Return(['x', 'y'])), 'RETURN    x    y')
-        assert_equal(repr(Return(['x', 'y'])), f"robot.model.Return(values=('x', 'y'))")
+        assert_equal(repr(Return(['x', 'y'])), "robot.model.Return(values=('x', 'y'))")
 
     def test_error(self):
         assert_equal(str(Error(['x', 'y'])), 'ERROR    x    y')
-        assert_equal(repr(Error(['x', 'y'])), f"robot.model.Error(values=('x', 'y'))")
+        assert_equal(repr(Error(['x', 'y'])), "robot.model.Error(values=('x', 'y'))")
 
 
 class TestIf(unittest.TestCase):

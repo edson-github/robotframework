@@ -143,7 +143,7 @@ class BaseBody(ItemList[BodyItem], Generic[KW, F, W, I, T, V, R, C, B, M, E]):
         elif item_type == BodyItem.TRY_EXCEPT_ROOT:
             item_class = self.try_class
         else:
-            item_class = getattr(self, item_type.lower() + '_class')
+            item_class = getattr(self, f'{item_type.lower()}_class')
         item_class = cast(Type[BodyItem], item_class)
         return item_class.from_dict(data)
 

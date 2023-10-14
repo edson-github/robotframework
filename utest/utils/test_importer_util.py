@@ -388,7 +388,7 @@ class TestSplitPathToModule(unittest.TestCase):
 
     def test_directory(self):
         self._verify('hello', 'hello')
-        self._verify('hello'+os.sep, 'hello')
+        self._verify(f'hello{os.sep}', 'hello')
 
 
 class TestInstantiation(unittest.TestCase):

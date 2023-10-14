@@ -38,7 +38,7 @@ def glob_escape(item):
     # that we don't want.
     for char in '[*?':
         if char in item:
-            item = item.replace(char, '[%s]' % char)
+            item = item.replace(char, f'[{char}]')
     return item
 
 
@@ -67,12 +67,10 @@ class Unescaper:
         ordinal = int(value, 16)
         # No Unicode code points above 0x10FFFF
         if ordinal > 0x10FFFF:
-            return 'U' + value
+            return f'U{value}'
         # `chr` only supports ordinals up to 0xFFFF on narrow Python builds.
         # This may not be relevant anymore.
-        if ordinal > 0xFFFF:
-            return eval(r"'\U%08x'" % ordinal)
-        return chr(ordinal)
+        return eval(r"'\U%08x'" % ordinal) if ordinal > 0xFFFF else chr(ordinal)
 
     def unescape(self, item):
         if not (is_string(item) and '\\' in item):

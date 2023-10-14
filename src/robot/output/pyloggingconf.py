@@ -71,8 +71,7 @@ class RobotHandler(logging.Handler):
         try:
             return self.format(record), None
         except:
-            message = 'Failed to log following message properly: %s' \
-                        % safe_str(record.msg)
+            message = f'Failed to log following message properly: {safe_str(record.msg)}'
             error = '\n'.join(get_error_details())
             return message, error
 

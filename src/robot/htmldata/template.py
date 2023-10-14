@@ -51,7 +51,7 @@ class HtmlTemplate(Iterable):
         except ValueError:
             raise ValueError(f"HTML template path must contain only directory and "
                              f"file names like 'rebot/log.html', got '{path}'.")
-        self.module = 'robot.htmldata.' + module
+        self.module = f'robot.htmldata.{module}'
 
     def __iter__(self):
         path = files(self.module).joinpath(self.name)

@@ -398,8 +398,9 @@ class Telnet:
         telnetlib_log_level = telnetlib_log_level or self._telnetlib_log_level
         if not prompt:
             prompt, prompt_is_regexp = self._prompt
-        logger.info('Opening connection to %s:%s with prompt: %s%s'
-                    % (host, port, prompt, ' (regexp)' if prompt_is_regexp else ''))
+        logger.info(
+            f"Opening connection to {host}:{port} with prompt: {prompt}{' (regexp)' if prompt_is_regexp else ''}"
+        )
         self._conn = self._get_connection(host, port, timeout, newline,
                                           prompt, is_truthy(prompt_is_regexp),
                                           encoding, encoding_errors,
@@ -509,7 +510,7 @@ class TelnetConnection(telnetlib.Telnet):
         self._terminal_type = self._encode(terminal_type) if terminal_type else None
         self.set_option_negotiation_callback(self._negotiate_options)
         self._set_telnetlib_log_level(telnetlib_log_level)
-        self._opt_responses = list()
+        self._opt_responses = []
 
     def set_timeout(self, timeout):
         """Sets the timeout used for waiting output in the current connection.
@@ -584,9 +585,7 @@ class TelnetConnection(telnetlib.Telnet):
         self._verify_connection()
         old = self._prompt
         self._set_prompt(prompt, prompt_is_regexp)
-        if old[1]:
-            return old[0].pattern, True
-        return old
+        return (old[0].pattern, True) if old[1] else old
 
     def _set_prompt(self, prompt, prompt_is_regexp):
         if is_truthy(prompt_is_regexp):
@@ -635,9 +634,7 @@ class TelnetConnection(telnetlib.Telnet):
         return text.encode(*self._encoding)
 
     def _decode(self, bytes):
-        if self._encoding[0] == 'NONE':
-            return bytes
-        return bytes.decode(*self._encoding)
+        return bytes if self._encoding[0] == 'NONE' else bytes.decode(*self._encoding)
 
     def set_telnetlib_log_level(self, level):
         """Sets the log level used for `logging` in the underlying ``telnetlib``.
@@ -654,7 +651,7 @@ class TelnetConnection(telnetlib.Telnet):
         if level.upper() == 'NONE':
             self._telnetlib_log_level = 'NONE'
         elif self._is_valid_log_level(level) is False:
-            raise AssertionError("Invalid log level '%s'" % level)
+            raise AssertionError(f"Invalid log level '{level}'")
         self._telnetlib_log_level = level.upper()
 
     def set_default_log_level(self, level):
@@ -673,7 +670,7 @@ class TelnetConnection(telnetlib.Telnet):
 
     def _set_default_log_level(self, level):
         if level is None or not self._is_valid_log_level(level):
-            raise AssertionError("Invalid log level '%s'" % level)
+            raise AssertionError(f"Invalid log level '{level}'")
         self._default_log_level = level.upper()
 
     def _is_valid_log_level(self, level):
@@ -782,9 +779,7 @@ class TelnetConnection(telnetlib.Telnet):
         return self.read_until(self._newline, loglevel)
 
     def _get_newline_for(self, text):
-        if is_bytes(text):
-            return self._encode(self._newline)
-        return self._newline
+        return self._encode(self._newline) if is_bytes(text) else self._newline
 
     def write_bare(self, text):
         """Writes the given text, and nothing else, into the connection.
@@ -869,7 +864,7 @@ class TelnetConnection(telnetlib.Telnet):
         try:
             return code_names[name]
         except KeyError:
-            raise RuntimeError("Unsupported control character '%s'." % name)
+            raise RuntimeError(f"Unsupported control character '{name}'.")
 
     def read(self, loglevel=None):
         """Reads everything that is currently available in the output.
@@ -915,15 +910,13 @@ class TelnetConnection(telnetlib.Telnet):
 
     def _terminal_read_until(self, expected):
         max_time = time.time() + self._timeout
-        output = self._terminal_emulator.read_until(expected)
-        if output:
+        if output := self._terminal_emulator.read_until(expected):
             return True, output
         while time.time() < max_time:
             output = telnetlib.Telnet.read_until(self, self._encode(expected),
                                                  self._terminal_frequency)
             self._terminal_emulator.feed(self._decode(output))
-            output = self._terminal_emulator.read_until(expected)
-            if output:
+            if output := self._terminal_emulator.read_until(expected):
                 return True, output
         return False, self._terminal_emulator.read()
 
@@ -940,14 +933,12 @@ class TelnetConnection(telnetlib.Telnet):
         regexps_bytes = [self._to_byte_regexp(rgx) for rgx in expected_list]
         regexps_unicode = [re.compile(self._decode(rgx.pattern))
                                for rgx in regexps_bytes]
-        out = self._terminal_emulator.read_until_regexp(regexps_unicode)
-        if out:
+        if out := self._terminal_emulator.read_until_regexp(regexps_unicode):
             return True, out
         while time.time() < max_time:
             output = self.expect(regexps_bytes, self._terminal_frequency)[-1]
             self._terminal_emulator.feed(self._decode(output))
-            out = self._terminal_emulator.read_until_regexp(regexps_unicode)
-            if out:
+            if out := self._terminal_emulator.read_until_regexp(regexps_unicode):
                 return True, out
         return False, self._terminal_emulator.read()
 
@@ -965,9 +956,7 @@ class TelnetConnection(telnetlib.Telnet):
         if is_string(exp):
             return re.compile(self._encode(exp))
         pattern = exp.pattern
-        if is_bytes(pattern):
-            return exp
-        return re.compile(self._encode(pattern))
+        return exp if is_bytes(pattern) else re.compile(self._encode(pattern))
 
     def read_until_regexp(self, *expected):
         """Reads output until any of the ``expected`` regular expressions match.
@@ -1030,9 +1019,9 @@ class TelnetConnection(telnetlib.Telnet):
         self._log(output, loglevel)
         if not success:
             prompt, regexp = self._prompt
-            raise AssertionError("Prompt '%s' not found in %s."
-                                 % (prompt if not regexp else prompt.pattern,
-                                    secs_to_timestr(self._timeout)))
+            raise AssertionError(
+                f"Prompt '{prompt if not regexp else prompt.pattern}' not found in {secs_to_timestr(self._timeout)}."
+            )
         if is_truthy(strip_prompt):
             output = self._strip_prompt(output)
         return output
@@ -1084,8 +1073,7 @@ class TelnetConnection(telnetlib.Telnet):
             raise RuntimeError('No connection open')
 
     def _log(self, msg, level=None):
-        msg = msg.strip()
-        if msg:
+        if msg := msg.strip():
             logger.write(msg, level or self._default_log_level)
 
     def _negotiate_options(self, sock, cmd, opt):
@@ -1209,8 +1197,7 @@ class TerminalEmulator:
     def read_until_regexp(self, regexp_list):
         current_out = self.current_output
         for rgx in regexp_list:
-            match = rgx.search(current_out)
-            if match:
+            if match := rgx.search(current_out):
                 self._update_buffer(current_out[match.end():])
                 return current_out[:match.end()]
         return None
@@ -1231,10 +1218,12 @@ class NoMatchError(AssertionError):
         AssertionError.__init__(self, self._get_message())
 
     def _get_message(self):
-        expected = "'%s'" % self.expected \
-                   if is_string(self.expected) \
-                   else seq2str(self.expected, lastsep=' or ')
-        msg = "No match found for %s in %s." % (expected, self.timeout)
+        expected = (
+            f"'{self.expected}'"
+            if is_string(self.expected)
+            else seq2str(self.expected, lastsep=' or ')
+        )
+        msg = f"No match found for {expected} in {self.timeout}."
         if self.output is not None:
             msg += ' Output:\n%s' % self.output
         return msg

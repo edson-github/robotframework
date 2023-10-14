@@ -27,9 +27,16 @@ def run_tests():
 
 
 def run():
-    cmd = ['java', '-cp', '%s%s%s' % (join(JARDIR, 'js.jar'), os.pathsep, join(JARDIR, 'jline.jar')),
-           'org.mozilla.javascript.tools.shell.Main',  '-opt', '-1', 'envjs.bootstrap.js',
-           join(BASE, 'webcontent', 'SpecRunner.html')]
+    cmd = [
+        'java',
+        '-cp',
+        f"{join(JARDIR, 'js.jar')}{os.pathsep}{join(JARDIR, 'jline.jar')}",
+        'org.mozilla.javascript.tools.shell.Main',
+        '-opt',
+        '-1',
+        'envjs.bootstrap.js',
+        join(BASE, 'webcontent', 'SpecRunner.html'),
+    ]
     call(cmd)
 
 

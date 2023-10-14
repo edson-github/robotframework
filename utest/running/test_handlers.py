@@ -48,7 +48,7 @@ class TestPythonHandler(unittest.TestCase):
         for method in _get_handler_methods(NameLibrary()):
             handler = _PythonHandler(LibraryMock('mylib'), method.__name__, method)
             assert_equal(handler.name, method.__doc__)
-            assert_equal(handler.full_name, 'mylib.'+method.__doc__)
+            assert_equal(handler.full_name, f'mylib.{method.__doc__}')
 
     def test_docs(self):
         for method in _get_handler_methods(DocLibrary()):

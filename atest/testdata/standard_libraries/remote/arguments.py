@@ -48,9 +48,12 @@ class Arguments:
     def _handle_binary_in_dict(self, arg):
         assert any(isinstance(key, Binary) or isinstance(value, Binary)
                    for key, value in arg.items()), 'No binary in dict'
-        return dict((self._handle_binary(key, required=False),
-                     self._handle_binary(value, required=False))
-                    for key, value in arg.items())
+        return {
+            self._handle_binary(key, required=False): self._handle_binary(
+                value, required=False
+            )
+            for key, value in arg.items()
+        }
 
     def kwarg_should_be(self, **kwargs):
         self.argument_should_be(**kwargs)

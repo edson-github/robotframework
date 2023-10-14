@@ -182,8 +182,8 @@ class TestSearchVariable(unittest.TestCase):
             for count in 1, 2, 3, 42:
                 var = '%s{%s}' % (i, i*count)
                 self._test(var, var)
-                self._test(var+'spam', var)
-                self._test('eggs'+var+'spam', var, start=4)
+                self._test(f'{var}spam', var)
+                self._test(f'eggs{var}spam', var, start=4)
                 self._test(i+var+i, var, start=1)
 
     def test_identifier_as_variable_name_with_internal_vars(self):
@@ -191,10 +191,10 @@ class TestSearchVariable(unittest.TestCase):
             for count in 1, 2, 3, 42:
                 var = '%s{%s{%s}}' % (i, i*count, i)
                 self._test(var, var)
-                self._test('eggs'+var+'spam', var, start=4)
+                self._test(f'eggs{var}spam', var, start=4)
                 var = '%s{%s{%s}}' % (i, i*count, i*count)
                 self._test(var, var)
-                self._test('eggs'+var+'spam', var, start=4)
+                self._test(f'eggs{var}spam', var, start=4)
 
     def test_many_possible_starts_and_ends(self):
         self._test('{}'*10000)

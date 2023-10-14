@@ -125,14 +125,14 @@ class TestCheckerLibrary:
         if utils.is_truthy(validate):
             self._validate_output(path)
         try:
-            logger.info("Processing output '%s'." % path)
+            logger.info(f"Processing output '{path}'.")
             result = Result(root_suite=NoSlotsTestSuite())
             ExecutionResultBuilder(path).build(result)
         except:
             set_suite_variable('$SUITE', None)
             msg, details = utils.get_error_details()
             logger.info(details)
-            raise RuntimeError('Processing output failed: %s' % msg)
+            raise RuntimeError(f'Processing output failed: {msg}')
         result.visit(ProcessResults())
         set_suite_variable('$SUITE', result.suite)
         set_suite_variable('$STATISTICS', result.statistics)
@@ -224,7 +224,7 @@ class TestCheckerLibrary:
             return
         if test.exp_message.startswith('REGEXP:'):
             pattern = self._get_pattern(test, 'REGEXP:')
-            if re.match('^%s$' % pattern, test.message, re.DOTALL):
+            if re.match(f'^{pattern}$', test.message, re.DOTALL):
                 return
         if test.exp_message.startswith('GLOB:'):
             pattern = self._get_pattern(test, 'GLOB:')
@@ -240,10 +240,10 @@ class TestCheckerLibrary:
                              f"Actual:\n{test.message}\n")
 
     def _get_pattern(self, test, prefix):
-        pattern = test.exp_message[len(prefix):].strip()
-        if not pattern:
+        if pattern := test.exp_message[len(prefix) :].strip():
+            return pattern
+        else:
             raise RuntimeError("Empty '%s' is not allowed!")
-        return pattern
 
     def should_contain_tests(self, suite, *names, **names_and_statuses):
         """Verify that specified tests exists in suite.
@@ -260,10 +260,10 @@ class TestCheckerLibrary:
         expected = [(n, None) for n in names if n not in names_and_statuses]
         expected.extend((n, s) for n, s in names_and_statuses.items())
         tests_msg = "\nExpected tests : %s\nActual tests   : %s" \
-                    % (', '.join(sorted([e[0] for e in expected], key=lambda s: s.lower())),
+                        % (', '.join(sorted([e[0] for e in expected], key=lambda s: s.lower())),
                        ', '.join(sorted([t.name for t in tests], key=lambda s: s.lower())))
         if len(tests) != len(expected):
-            raise AssertionError("Wrong number of tests." + tests_msg)
+            raise AssertionError(f"Wrong number of tests.{tests_msg}")
         for test in tests:
             logger.info(f"Verifying test '{test.name}'")
             try:
@@ -289,7 +289,7 @@ class TestCheckerLibrary:
         actual_names = [t.name for t in suite.tests]
         for name in test_names:
             if name in actual_names:
-                raise AssertionError('Suite should not have contained test "%s"' % name)
+                raise AssertionError(f'Suite should not have contained test "{name}"')
 
     def should_contain_suites(self, suite, *expected):
         logger.info('Suite has suites', suite.suites)

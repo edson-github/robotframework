@@ -76,9 +76,7 @@ class Result:
         By default returns the number of failed tests (max 250),
         but can be :func:`configured <configure>` to always return 0.
         """
-        if self._status_rc:
-            return min(self.suite.statistics.failed, 250)
-        return 0
+        return min(self.suite.statistics.failed, 250) if self._status_rc else 0
 
     def configure(self, status_rc=True, suite_config=None, stat_config=None):
         """Configures the result object and objects it contains.

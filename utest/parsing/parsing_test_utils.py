@@ -20,9 +20,7 @@ def assert_model(model, expected, **expected_attrs):
         assert_block(model, expected, expected_attrs)
     elif isinstance(model, Statement):
         assert_statement(model, expected)
-    elif model is None and expected is None:
-        pass
-    else:
+    elif model is not None or expected is not None:
         raise AssertionError('Incompatible children:\n%r\n%r' % (model, expected))
 
 

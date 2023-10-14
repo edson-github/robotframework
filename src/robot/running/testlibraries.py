@@ -34,10 +34,7 @@ from .outputcapture import OutputCapturer
 
 
 def TestLibrary(name, args=None, variables=None, create_handlers=True, logger=LOGGER):
-    if name in STDLIBS:
-        import_name = 'robot.libraries.' + name
-    else:
-        import_name = name
+    import_name = f'robot.libraries.{name}' if name in STDLIBS else name
     with OutputCapturer(library_import=True):
         importer = Importer('library', logger=LOGGER)
         libcode, source = importer.import_class_or_module(import_name,
@@ -53,10 +50,7 @@ def _get_lib_class(libcode):
     if inspect.ismodule(libcode):
         return _ModuleLibrary
     if GetKeywordNames(libcode):
-        if RunKeyword(libcode):
-            return _DynamicLibrary
-        else:
-            return _HybridLibrary
+        return _DynamicLibrary if RunKeyword(libcode) else _HybridLibrary
     return _ClassLibrary
 
 
@@ -103,10 +97,14 @@ class _BaseTestLibrary:
             lines, start_lineno = inspect.getsourcelines(self._libcode)
         except (TypeError, OSError, IOError):
             return -1
-        for increment, line in enumerate(lines):
-            if line.strip().startswith('class '):
-                return start_lineno + increment
-        return start_lineno
+        return next(
+            (
+                start_lineno + increment
+                for increment, line in enumerate(lines)
+                if line.strip().startswith('class ')
+            ),
+            start_lineno,
+        )
 
     def create_handlers(self):
         self._create_handlers(self.get_instance())
@@ -134,8 +132,7 @@ class _BaseTestLibrary:
     def report_error(self, message, details=None, level='ERROR',
                      details_level='INFO'):
         prefix = 'Error in' if level in ('ERROR', 'WARN') else 'In'
-        self.logger.write("%s library '%s': %s" % (prefix, self.name, message),
-                          level)
+        self.logger.write(f"{prefix} library '{self.name}': {message}", level)
         if details:
             self.logger.write('Details:\n%s' % details, details_level)
 
@@ -197,9 +194,7 @@ class _BaseTestLibrary:
         listeners = getattr(libinst, 'ROBOT_LIBRARY_LISTENER', None)
         if listeners is None:
             return []
-        if is_list_like(listeners):
-            return listeners
-        return [listeners]
+        return listeners if is_list_like(listeners) else [listeners]
 
     def register_listeners(self):
         if self.has_listener:
@@ -210,7 +205,7 @@ class _BaseTestLibrary:
                 self.has_listener = False
                 # Error should have information about suite where the
                 # problem occurred but we don't have such info here.
-                self.report_error("Registering listeners failed: %s" % err)
+                self.report_error(f"Registering listeners failed: {err}")
 
     def unregister_listeners(self, close=False):
         if self.has_listener:
@@ -231,19 +226,22 @@ class _BaseTestLibrary:
         except Exception:
             message, details = get_error_details()
             name = getattr(listener, '__name__', None) or type_name(listener)
-            self.report_error("Calling method '%s' of listener '%s' failed: %s"
-                              % (method.__name__, name, message), details)
+            self.report_error(
+                f"Calling method '{method.__name__}' of listener '{name}' failed: {message}",
+                details,
+            )
 
     def _create_handlers(self, libcode):
         try:
             names = self._get_handler_names(libcode)
         except Exception:
             message, details = get_error_details()
-            raise DataError("Getting keyword names from library '%s' failed: %s"
-                            % (self.name, message), details)
+            raise DataError(
+                f"Getting keyword names from library '{self.name}' failed: {message}",
+                details,
+            )
         for name in names:
-            method = self._try_to_get_handler_method(libcode, name)
-            if method:
+            if method := self._try_to_get_handler_method(libcode, name):
                 handler, embedded = self._try_to_create_handler(name, method)
                 if handler:
                     try:
@@ -251,7 +249,7 @@ class _BaseTestLibrary:
                     except DataError as err:
                         self._adding_keyword_failed(handler.name, err)
                     else:
-                        self.logger.debug("Created keyword '%s'" % handler.name)
+                        self.logger.debug(f"Created keyword '{handler.name}'")
 
     def _get_handler_names(self, libcode):
         def has_robot_name(name):
@@ -277,10 +275,10 @@ class _BaseTestLibrary:
 
     def _adding_keyword_failed(self, name, error, level='ERROR'):
         self.report_error(
-            "Adding keyword '%s' failed: %s" % (name, error.message),
+            f"Adding keyword '{name}' failed: {error.message}",
             error.details,
             level=level,
-            details_level='DEBUG'
+            details_level='DEBUG',
         )
 
     def _get_handler_method(self, libcode, name):
@@ -315,8 +313,7 @@ class _BaseTestLibrary:
         return Handler(self, handler_name, handler_method)
 
     def _get_possible_embedded_args_handler(self, handler):
-        embedded = EmbeddedArguments.from_name(handler.name)
-        if embedded:
+        if embedded := EmbeddedArguments.from_name(handler.name):
             self._validate_embedded_count(embedded, handler.arguments)
             return EmbeddedArgumentsHandler(embedded, handler), True
         return handler, False
@@ -330,7 +327,7 @@ class _BaseTestLibrary:
         msg, details = get_error_details()
         if self.positional_args or self.named_args:
             args = self.positional_args + ['%s=%s' % item for item in self.named_args]
-            args_text = 'arguments %s' % seq2str2(args)
+            args_text = f'arguments {seq2str2(args)}'
         else:
             args_text = 'no arguments'
         raise DataError("Initializing library '%s' with %s failed: %s\n%s"

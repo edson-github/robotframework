@@ -336,15 +336,12 @@ def get_current_date(time_zone='local', increment=0,
     upper = time_zone.upper()
     if upper == 'LOCAL':
         dt = datetime.now()
-    # Epoch time is same regardless the timezone. We convert `dt` to epoch time
-    # using `time.mktime()` afterwards, and it expects time in local time.
-    # For details: https://github.com/robotframework/robotframework/issues/3306
     elif upper == 'UTC' and result_format.upper() == 'EPOCH':
         dt = datetime.now()
     elif upper == 'UTC':
         dt = datetime.utcnow()
     else:
-        raise ValueError("Unsupported timezone '%s'." % time_zone)
+        raise ValueError(f"Unsupported timezone '{time_zone}'.")
     date = Date(dt) + Time(increment)
     return date.convert(result_format, millis=is_falsy(exclude_millis))
 
@@ -526,7 +523,7 @@ class Date:
             return datetime.fromtimestamp(date)
         if is_string(date):
             return self._string_to_datetime(date, input_format)
-        raise ValueError("Unsupported input '%s'." % date)
+        raise ValueError(f"Unsupported input '{date}'.")
 
     def _string_to_datetime(self, ts, input_format):
         if not input_format:
@@ -537,10 +534,9 @@ class Date:
     def _normalize_timestamp(self, date):
         ts = ''.join(d for d in date if d.isdigit())
         if not (8 <= len(ts) <= 20):
-            raise ValueError("Invalid timestamp '%s'." % date)
+            raise ValueError(f"Invalid timestamp '{date}'.")
         ts = ts.ljust(20, '0')
-        return '%s-%s-%s %s:%s:%s.%s' % (ts[:4], ts[4:6], ts[6:8], ts[8:10],
-                                         ts[10:12], ts[12:14], ts[14:])
+        return f'{ts[:4]}-{ts[4:6]}-{ts[6:8]} {ts[8:10]}:{ts[10:12]}:{ts[12:14]}.{ts[14:]}'
 
     def convert(self, format, millis=True):
         dt = self.datetime
@@ -556,7 +552,7 @@ class Date:
             return dt
         if format == 'epoch':
             return self._convert_to_epoch(dt)
-        raise ValueError("Unknown format '%s'." % format)
+        raise ValueError(f"Unknown format '{format}'.")
 
     def _convert_to_custom_timestamp(self, dt, format):
         return dt.strftime(format)
@@ -576,15 +572,16 @@ class Date:
     def __add__(self, other):
         if isinstance(other, Time):
             return Date(self.datetime + other.timedelta)
-        raise TypeError('Can only add Time to Date, got %s.' % type_name(other))
+        raise TypeError(f'Can only add Time to Date, got {type_name(other)}.')
 
     def __sub__(self, other):
         if isinstance(other, Date):
             return Time(self.datetime - other.datetime)
         if isinstance(other, Time):
             return Date(self.datetime - other.timedelta)
-        raise TypeError('Can only subtract Date or Time from Date, got %s.'
-                        % type_name(other))
+        raise TypeError(
+            f'Can only subtract Date or Time from Date, got {type_name(other)}.'
+        )
 
 
 class Time:
@@ -603,9 +600,9 @@ class Time:
 
     def convert(self, format, millis=True):
         try:
-            result_converter = getattr(self, '_convert_to_%s' % format.lower())
+            result_converter = getattr(self, f'_convert_to_{format.lower()}')
         except AttributeError:
-            raise ValueError("Unknown format '%s'." % format)
+            raise ValueError(f"Unknown format '{format}'.")
         seconds = self.seconds if millis else float(round(self.seconds))
         return result_converter(seconds, millis)
 
@@ -627,10 +624,9 @@ class Time:
     def __add__(self, other):
         if isinstance(other, Time):
             return Time(self.seconds + other.seconds)
-        raise TypeError('Can only add Time to Time, got %s.' % type_name(other))
+        raise TypeError(f'Can only add Time to Time, got {type_name(other)}.')
 
     def __sub__(self, other):
         if isinstance(other, Time):
             return Time(self.seconds - other.seconds)
-        raise TypeError('Can only subtract Time from Time, got %s.'
-                        % type_name(other))
+        raise TypeError(f'Can only subtract Time from Time, got {type_name(other)}.')

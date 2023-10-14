@@ -53,8 +53,7 @@ class DocFormatter:
     def _yield_header_targets(self, introduction):
         headers = HeaderFormatter()
         for line in introduction.splitlines():
-            match = headers.match(line.strip())
-            if match:
+            if match := headers.match(line.strip()):
                 yield match.group(2)
 
     def _escape_and_encode_targets(self, targets):
@@ -131,8 +130,7 @@ class HtmlToText:
     }
 
     def get_short_doc_from_html(self, doc):
-        match = re.search(r'<p.*?>(.*?)</?p>', doc, re.DOTALL)
-        if match:
+        if match := re.search(r'<p.*?>(.*?)</?p>', doc, re.DOTALL):
             doc = match.group(1)
         doc = self.html_to_plain_text(doc)
         return doc

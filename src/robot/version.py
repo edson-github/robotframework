@@ -22,21 +22,13 @@ VERSION = '7.0.dev1'
 
 
 def get_version(naked=False):
-    if naked:
-        return re.split('(a|b|rc|.dev)', VERSION)[0]
-    return VERSION
+    return re.split('(a|b|rc|.dev)', VERSION)[0] if naked else VERSION
 
 
 def get_full_version(program=None, naked=False):
-    version = '%s %s (%s %s on %s)' % (program or '',
-                                       get_version(naked),
-                                       get_interpreter(),
-                                       sys.version.split()[0],
-                                       sys.platform)
+    version = f"{program or ''} {get_version(naked)} ({get_interpreter()} {sys.version.split()[0]} on {sys.platform})"
     return version.strip()
 
 
 def get_interpreter():
-    if 'PyPy' in sys.version:
-        return 'PyPy'
-    return 'Python'
+    return 'PyPy' if 'PyPy' in sys.version else 'Python'

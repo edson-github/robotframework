@@ -28,4 +28,4 @@ class Initted:
         self.id = id
 
     def kw_from_lib_initted_by_init(self):
-        print('Keyword from library initted by __init__ (id: %s).' % self.id)
+        print(f'Keyword from library initted by __init__ (id: {self.id}).')

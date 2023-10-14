@@ -11,7 +11,7 @@ one_arg_vars = {
 
 
 def get_variables(*args):
-    if len(args) == 0:
+    if not args:
         return no_args_vars
     if len(args) == 1:
         return one_arg_vars

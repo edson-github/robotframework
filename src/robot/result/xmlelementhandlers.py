@@ -131,11 +131,10 @@ class KeywordHandler(ElementHandler):
                           'while', 'variable', 'return', 'break', 'continue', 'error'))
 
     def start(self, elem, result):
-        elem_type = elem.get('type')
-        if not elem_type:
-            creator = self._create_keyword
+        if elem_type := elem.get('type'):
+            creator = getattr(self, f'_create_{elem_type.lower()}')
         else:
-            creator = getattr(self, '_create_' + elem_type.lower())
+            creator = self._create_keyword
         return creator(elem, result)
 
     def _create_keyword(self, elem, result):

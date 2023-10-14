@@ -119,9 +119,7 @@ class StatusMixin:
         """
         if self._start_time:
             return self._start_time
-        if self._end_time:
-            return self._end_time - self.elapsed_time
-        return None
+        return self._end_time - self.elapsed_time if self._end_time else None
 
     @start_time.setter
     def start_time(self, start_time: 'datetime|str|None'):
@@ -143,9 +141,7 @@ class StatusMixin:
         """
         if self._end_time:
             return self._end_time
-        if self._start_time:
-            return self._start_time + self.elapsed_time
-        return None
+        return self._start_time + self.elapsed_time if self._start_time else None
 
     @end_time.setter
     def end_time(self, end_time: 'datetime|str|None'):
@@ -958,9 +954,7 @@ class TestSuite(model.TestSuite[Keyword, TestCase], StatusMixin):
         stats = self.statistics  # Local variable avoids recreating stats.
         if stats.failed:
             return self.FAIL
-        if stats.passed:
-            return self.PASS
-        return self.SKIP
+        return self.PASS if stats.passed else self.SKIP
 
     @property
     def statistics(self) -> TotalStatistics:

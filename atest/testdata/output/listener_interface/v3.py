@@ -9,7 +9,7 @@ ROBOT_LISTENER_API_VERSION = 3
 
 def start_suite(data, result):
     data.name = data.doc = result.name = 'Not visible in results'
-    result.doc = (result.doc + ' [start suite]').strip()
+    result.doc = f'{result.doc} [start suite]'.strip()
     result.metadata['suite'] = '[start]'
     result.metadata['tests'] = ''
     result.metadata['number'] = 42
@@ -37,7 +37,7 @@ def end_suite(data, result):
 
 def startTest(data, result):
     data.name = data.doc = result.name = 'Not visible in results'
-    result.doc = (result.doc + ' [start test]').strip()
+    result.doc = f'{result.doc} [start test]'.strip()
     result.tags.add('[start]')
     result.message = '[start]'
     result.parent.metadata['tests'] += 'x'
@@ -71,23 +71,23 @@ message = log_message
 
 
 def output_file(path):
-    print("Output: %s" % os.path.basename(path), file=sys.__stderr__)
+    print(f"Output: {os.path.basename(path)}", file=sys.__stderr__)
 
 
 def log_file(path):
-    print("Log: %s" % os.path.basename(path), file=sys.__stderr__)
+    print(f"Log: {os.path.basename(path)}", file=sys.__stderr__)
 
 
 def report_file(path):
-    print("Report: %s" % os.path.basename(path), file=sys.__stderr__)
+    print(f"Report: {os.path.basename(path)}", file=sys.__stderr__)
 
 
 def debug_file(path):
-    print("Debug: %s" % os.path.basename(path), file=sys.__stderr__)
+    print(f"Debug: {os.path.basename(path)}", file=sys.__stderr__)
 
 
 def xunit_file(path):
-    print("Xunit: %s" % os.path.basename(path), file=sys.__stderr__)
+    print(f"Xunit: {os.path.basename(path)}", file=sys.__stderr__)
 
 
 def close():
@@ -98,7 +98,7 @@ class TestModifier(SuiteVisitor):
 
     def visit_test(self, test):
         test.name += ' [start suite]'
-        test.doc = (test.doc + ' [start suite]').strip()
+        test.doc = f'{test.doc} [start suite]'.strip()
         test.tags.add('[start suite]')
 
 

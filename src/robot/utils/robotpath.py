@@ -51,9 +51,7 @@ def normpath(path, case_normalize=False):
     path = os.path.normpath(path)
     if case_normalize and CASE_INSENSITIVE_FILESYSTEM:
         path = path.lower()
-    if WINDOWS and len(path) == 2 and path[1] == ':':
-        return path + '\\'
-    return path
+    return path + '\\' if WINDOWS and len(path) == 2 and path[1] == ':' else path
 
 
 def abspath(path, case_normalize=False):
@@ -80,7 +78,7 @@ def get_link_path(target, base):
     path = _get_link_path(target, base)
     url = path_to_url(path)
     if os.path.isabs(path):
-        url = 'file:' + url
+        url = f'file:{url}'
     return url
 
 
@@ -140,9 +138,7 @@ def find_file(path, basedir='.', file_type=None):
 
 
 def _find_absolute_path(path):
-    if _is_valid_file(path):
-        return path
-    return None
+    return path if _is_valid_file(path) else None
 
 
 def _find_relative_path(path, basedir):

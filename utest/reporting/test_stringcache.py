@@ -38,16 +38,20 @@ class TestStringCache(unittest.TestCase):
     def test_coded_string_is_at_most_1_characters_longer_than_raw(self):
         for i in range(300):
             id = self.cache.add(self._generate_random_string(i))
-            assert_true(i+1 >= len(self.cache.dump()[id]),
-                        'len(self._text_cache.dump()[id]) (%s) > i+1 (%s) [test seed = %s]'
-                        % (len(self.cache.dump()[id]), i+1, self._seed))
+            assert_true(
+                i + 1 >= len(self.cache.dump()[id]),
+                f'len(self._text_cache.dump()[id]) ({len(self.cache.dump()[id])}) > i+1 ({i + 1}) [test seed = {self._seed}]',
+            )
 
     def test_long_random_strings_are_compressed(self):
-        for i in range(30):
+        for _ in range(30):
             value = self._generate_random_string(300)
             id = self.cache.add(value)
-            assert_equal(self._compress(value), self.cache.dump()[id],
-                          msg='Did not compress [test seed = %s]' % self._seed)
+            assert_equal(
+                self._compress(value),
+                self.cache.dump()[id],
+                msg=f'Did not compress [test seed = {self._seed}]',
+            )
 
     def _generate_random_string(self, length):
         return ''.join(random.choice(string.digits) for _ in range(length))
@@ -57,7 +61,7 @@ class TestStringCache(unittest.TestCase):
         indices1 = [self.cache.add(s) for s in strings]
         indices2 = [self.cache.add(s) for s in strings]
         for i1, i2 in zip(indices1, indices2):
-            assert_true(i1 is i2, 'not same: %s and %s' % (i1, i2))
+            assert_true(i1 is i2, f'not same: {i1} and {i2}')
 
 
 class TestStringIndex(unittest.TestCase):

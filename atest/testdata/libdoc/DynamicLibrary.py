@@ -51,7 +51,7 @@ class DynamicLibrary:
             return 'Hyvää yötä.\n\nСпасибо! (UTF-8)\n\nTags: hyvää, yötä'.encode('UTF-8')
         if name == 'nön-äscii Ünicöde':
             return 'Hyvää yötä.\n\nСпасибо! (Unicode)\n\nTags: hyvää, yötä'
-        short = 'Dummy documentation for `%s`.' % name
+        short = f'Dummy documentation for `{name}`.'
         if name.startswith('__'):
             return short
         return short + '''
@@ -71,28 +71,22 @@ http://robotframework.org
 '''
 
     def get_keyword_tags(self, name):
-        if name == 'Tags':
-            return ['my', 'tägs']
-        return None
+        return ['my', 'tägs'] if name == 'Tags' else None
 
     def get_keyword_types(self, name):
-        if name == 'Types':
-            return {'integer': int, 'boolean': bool}
-        return None
+        return {'integer': int, 'boolean': bool} if name == 'Types' else None
 
     def get_keyword_source(self, name):
         if name == 'Source info':
             path = inspect.getsourcefile(type(self))
             lineno = inspect.getsourcelines(self.get_keyword_source)[1]
-            return '%s:%s' % (path, lineno)
+            return f'{path}:{lineno}'
         if name == 'Source path only':
-            return os.path.dirname(__file__) + '/Annotations.py'
+            return f'{os.path.dirname(__file__)}/Annotations.py'
         if name == 'Source lineno only':
             return ':12345'
         if name == 'Non-existing source path and lineno':
             return 'whatever:xxx'
         if name == 'Non-existing source path with lineno':
             return 'everwhat:42'
-        if name == 'Invalid source info':
-            return 123
-        return None
+        return 123 if name == 'Invalid source info' else None

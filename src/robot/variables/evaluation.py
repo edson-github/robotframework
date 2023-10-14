@@ -79,7 +79,7 @@ def _decorate_variables(expression, variable_store):
                     variable_not_found(f'${tokval}',
                                        variable_store.as_dict(decoration=False),
                                        deco_braces=False)
-                tokval = 'RF_VAR_' + tokval
+                tokval = f'RF_VAR_{tokval}'
                 variable_found = True
             else:
                 tokens.append((prev_toknum, '$'))

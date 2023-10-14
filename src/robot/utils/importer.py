@@ -133,7 +133,7 @@ class Importer:
         if os.path.isdir(source):
             candidate = os.path.join(source, '__init__.py')
         elif source.endswith('.pyc'):
-            candidate = source[:-4] + '.py'
+            candidate = f'{source[:-4]}.py'
         else:
             return source
         return candidate if os.path.exists(candidate) else source
@@ -162,11 +162,12 @@ class Importer:
             self._raise_import_failed(path, err)
 
     def _log_import_succeeded(self, item, name, source):
-        import_type = '%s ' % self._type.lower() if self._type else ''
+        import_type = f'{self._type.lower()} ' if self._type else ''
         item_type = 'module' if inspect.ismodule(item) else 'class'
-        location = ("'%s'" % source) if source else 'unknown location'
-        self._logger.info("Imported %s%s '%s' from %s."
-                          % (import_type, item_type, name, location))
+        location = f"'{source}'" if source else 'unknown location'
+        self._logger.info(
+            f"Imported {import_type}{item_type} '{name}' from {location}."
+        )
 
     def _raise_import_failed(self, name, error):
         prefix = f'Importing {self._type.lower()}' if self._type else 'Importing'
@@ -223,7 +224,7 @@ class _Importer:
     def _verify_type(self, imported):
         if inspect.isclass(imported) or inspect.ismodule(imported):
             return imported
-        raise DataError('Expected class or module, got %s.' % type_name(imported))
+        raise DataError(f'Expected class or module, got {type_name(imported)}.')
 
     def _get_class_from_module(self, module, name=None):
         klass = getattr(module, name or module.__name__, None)
@@ -256,7 +257,7 @@ class ByPathImporter(_Importer):
             raise DataError('File or directory does not exist.')
         if not os.path.isabs(path):
             raise DataError('Import path must be absolute.')
-        if not os.path.splitext(path)[1] in self._valid_import_extensions:
+        if os.path.splitext(path)[1] not in self._valid_import_extensions:
             raise DataError('Not a valid file or directory to import.')
 
     def _remove_wrong_module_from_sys_modules(self, path):
@@ -322,8 +323,7 @@ class DottedImporter(_Importer):
         try:
             imported = getattr(parent, lib_name)
         except AttributeError:
-            raise DataError("Module '%s' does not contain '%s'."
-                            % (parent_name, lib_name))
+            raise DataError(f"Module '{parent_name}' does not contain '{lib_name}'.")
         if get_class:
             imported = self._get_class_from_module(imported, lib_name) or imported
         return self._verify_type(imported), self._get_source(imported)

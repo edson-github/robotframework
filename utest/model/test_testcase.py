@@ -118,7 +118,7 @@ class TestStringRepresentation(unittest.TestCase):
         for tc, expected in [(self.empty, "TestCase(name='')"),
                              (self.ascii, "TestCase(name='Kekkonen')"),
                              (self.non_ascii, "TestCase(name='hyvä nimi')")]:
-            assert_equal(repr(tc), 'robot.model.' + expected)
+            assert_equal(repr(tc), f'robot.model.{expected}')
 
 
 class TestTestCases(unittest.TestCase):

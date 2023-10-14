@@ -69,8 +69,9 @@ class TestAsserts(unittest.TestCase):
     def test_assert_equal_with_values_having_same_string_repr(self):
         for val, type_ in [(1, 'integer'),
                            (MyEqual(1), 'MyEqual')]:
-            assert_raises_with_msg(AE, '1 (string) != 1 (%s)' % type_,
-                                   assert_equal, '1', val)
+            assert_raises_with_msg(
+                AE, f'1 (string) != 1 ({type_})', assert_equal, '1', val
+            )
         assert_raises_with_msg(AE, '1.0 (float) != 1.0 (string)',
                                assert_equal, 1.0, '1.0')
         assert_raises_with_msg(AE, 'True (string) != True (boolean)',

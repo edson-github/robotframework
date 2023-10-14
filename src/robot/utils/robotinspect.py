@@ -22,6 +22,4 @@ def is_init(method):
     if not method:
         return False
     # https://foss.heptapod.net/pypy/pypy/-/issues/2462
-    if PYPY:
-        return method is not object.__init__
-    return inspect.isfunction(method)
+    return method is not object.__init__ if PYPY else inspect.isfunction(method)

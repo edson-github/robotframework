@@ -174,8 +174,9 @@ class TestTime(unittest.TestCase):
     def test_timestr_to_secs_with_invalid(self):
         for inv in ['', 'foo', 'foo days', '1sec 42 millis 3', '1min 2w',
                     '01:02:03:04', '01:02:03foo', 'foo01:02:03', None]:
-            assert_raises_with_msg(ValueError, "Invalid time string '%s'." % inv,
-                                   timestr_to_secs, inv)
+            assert_raises_with_msg(
+                ValueError, f"Invalid time string '{inv}'.", timestr_to_secs, inv
+            )
 
     def test_secs_to_timestr(self):
         for inp, compact, verbose in [
@@ -224,8 +225,9 @@ class TestTime(unittest.TestCase):
         ]:
             with warnings.catch_warnings(record=True):
                 ts = get_timestamp(*seps)
-            assert_not_none(re.search(pattern, ts),
-                            "'%s' didn't match '%s'" % (ts, pattern), False)
+            assert_not_none(
+                re.search(pattern, ts), f"'{ts}' didn't match '{pattern}'", False
+            )
 
     def test_timestamp_to_secs(self):
         with warnings.catch_warnings(record=True):
@@ -297,10 +299,16 @@ class TestTime(unittest.TestCase):
             assert_equal(elapsed_time_to_string(timedelta(seconds=elapsed)),
                          expected, elapsed)
             if elapsed != 0:
-                assert_equal(elapsed_time_to_string(-elapsed, seconds=True),
-                             '-' + expected, elapsed)
-                assert_equal(elapsed_time_to_string(timedelta(seconds=-elapsed)),
-                             '-' + expected, elapsed)
+                assert_equal(
+                    elapsed_time_to_string(-elapsed, seconds=True),
+                    f'-{expected}',
+                    elapsed,
+                )
+                assert_equal(
+                    elapsed_time_to_string(timedelta(seconds=-elapsed)),
+                    f'-{expected}',
+                    elapsed,
+                )
 
     def test_elapsed_time_to_string_without_millis(self):
         for elapsed, expected in [(0, '00:00:00'),
@@ -329,8 +337,11 @@ class TestTime(unittest.TestCase):
                                                 seconds=True),
                          expected, elapsed)
             if expected != '00:00:00':
-                assert_equal(elapsed_time_to_string(-1 * elapsed, False, True),
-                             '-' + expected, elapsed)
+                assert_equal(
+                    elapsed_time_to_string(-1 * elapsed, False, True),
+                    f'-{expected}',
+                    elapsed,
+                )
 
     def test_elapsed_time_default_input_is_deprecated(self):
         with warnings.catch_warnings(record=True) as w:

@@ -121,7 +121,7 @@ def _normalize_timestr(timestr):
                                ('m', ['minute', 'min']),
                                ('h', ['hour']),
                                ('d', ['day'])]:
-        plural_aliases = [a+'s' for a in aliases if not a.endswith('s')]
+        plural_aliases = [f'{a}s' for a in aliases if not a.endswith('s')]
         for alias in plural_aliases + aliases:
             if alias in timestr:
                 timestr = timestr.replace(alias, specifier)
@@ -170,7 +170,7 @@ class _SecsToTimestrHelper:
         if self._compact:
             suffix = compact_suffix
         else:
-            suffix = ' %s%s' % (long_suffix, plural_or_not(value))
+            suffix = f' {long_suffix}{plural_or_not(value)}'
         self._ret.append('%d%s' % (value, suffix))
 
     def _secs_to_components(self, float_secs):
@@ -226,11 +226,18 @@ def get_time(format='timestamp', time_=None):
     if 'epoch' in format:
         return time_
     dt = datetime.fromtimestamp(time_)
-    parts = []
-    for part, name in [(dt.year, 'year'), (dt.month, 'month'), (dt.day, 'day'),
-                       (dt.hour, 'hour'), (dt.minute, 'min'), (dt.second, 'sec')]:
-        if name in format:
-            parts.append(f'{part:02}')
+    parts = [
+        f'{part:02}'
+        for part, name in [
+            (dt.year, 'year'),
+            (dt.month, 'month'),
+            (dt.day, 'day'),
+            (dt.hour, 'hour'),
+            (dt.minute, 'min'),
+            (dt.second, 'sec'),
+        ]
+        if name in format
+    ]
     # 2) Return time as timestamp
     if not parts:
         return dt.isoformat(' ', timespec='seconds')
@@ -278,9 +285,15 @@ def parse_timestamp(timestamp: 'str|datetime') -> datetime:
             timestamp = timestamp.replace(sep, '')
     timestamp = timestamp.ljust(20, '0')
     try:
-        return datetime(int(timestamp[0:4]), int(timestamp[4:6]), int(timestamp[6:8]),
-                        int(timestamp[8:10]), int(timestamp[10:12]), int(timestamp[12:14]),
-                        int(timestamp[14:20]))
+        return datetime(
+            int(timestamp[:4]),
+            int(timestamp[4:6]),
+            int(timestamp[6:8]),
+            int(timestamp[8:10]),
+            int(timestamp[10:12]),
+            int(timestamp[12:14]),
+            int(timestamp[14:20]),
+        )
     except ValueError:
         raise ValueError(f"Invalid timestamp '{orig}'.")
 
@@ -306,7 +319,7 @@ def parse_time(timestr):
         seconds = method(timestr)
         if seconds is not None:
             return int(seconds)
-    raise ValueError("Invalid time format '%s'." % timestr)
+    raise ValueError(f"Invalid time format '{timestr}'.")
 
 
 def _parse_time_epoch(timestr):
@@ -315,7 +328,7 @@ def _parse_time_epoch(timestr):
     except ValueError:
         return None
     if ret < 0:
-        raise ValueError("Epoch time must be positive (got %s)." % timestr)
+        raise ValueError(f"Epoch time must be positive (got {timestr}).")
     return ret
 
 
@@ -384,7 +397,7 @@ def timestamp_to_secs(timestamp, seps=None):
     try:
         secs = _timestamp_to_millis(timestamp, seps) / 1000.0
     except (ValueError, OverflowError):
-        raise ValueError("Invalid timestamp '%s'." % timestamp)
+        raise ValueError(f"Invalid timestamp '{timestamp}'.")
     else:
         return round(secs, 3)
 
@@ -406,7 +419,7 @@ def get_elapsed_time(start_time, end_time):
     """Deprecated in Robot Framework 7.0. Will be removed in Robot Framework 8.0."""
     warnings.warn("'robot.utils.get_elapsed_time' is deprecated and will be "
                   "removed in Robot Framework 8.0.")
-    if start_time == end_time or not (start_time and end_time):
+    if start_time == end_time or not start_time or not end_time:
         return 0
     if start_time[:-4] == end_time[:-4]:
         return int(end_time[-3:]) - int(start_time[-3:])

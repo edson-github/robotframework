@@ -49,8 +49,7 @@ class TypeValidator:
         # 'return' isn't used for anything yet, but it may be shown by Libdoc
         # in the future. Trying to be forward compatible.
         names = set(self.arg_spec.argument_names + ['return'])
-        extra = [t for t in types if t not in names]
-        if extra:
+        if extra := [t for t in types if t not in names]:
             raise DataError(f'Type information given to non-existing '
                             f'argument{s(extra)} {seq2str(sorted(extra))}.')
 

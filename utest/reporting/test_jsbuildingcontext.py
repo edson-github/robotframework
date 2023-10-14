@@ -31,7 +31,7 @@ class TestStringContext(unittest.TestCase):
         self._verify([None, '', None], [0, 0, 0], [])
 
     def _verify(self, strings, exp_ids, exp_strings, escape=True):
-        exp_strings = tuple('*'+s for s in [''] + exp_strings)
+        exp_strings = tuple(f'*{s}' for s in [''] + exp_strings)
         ctx = JsBuildingContext()
         results = [ctx.string(s, escape=escape) for s in strings]
         assert_equal(results, exp_ids)

@@ -129,10 +129,7 @@ class Statement(Node, ABC):
         If there are no matches, return ``None``. If there are multiple
         matches, return the first match.
         """
-        for token in self.tokens:
-            if token.type in types:
-                return token
-        return None
+        return next((token for token in self.tokens if token.type in types), None)
 
     def get_tokens(self, *types: str) -> 'list[Token]':
         """Return tokens having any of the given ``types``."""
@@ -286,9 +283,7 @@ class SingleValue(Statement, ABC):
     @property
     def value(self) -> 'str|None':
         values = self.get_values(Token.NAME, Token.ARGUMENT)
-        if values and values[0].upper() != 'NONE':
-            return values[0]
-        return None
+        return values[0] if values and values[0].upper() != 'NONE' else None
 
 
 class MultiValue(Statement, ABC):
@@ -663,9 +658,7 @@ class Variable(Statement):
     @property
     def name(self) -> str:
         name = self.get_value(Token.VARIABLE, '')
-        if name.endswith('='):
-            return name[:-1].rstrip()
-        return name
+        return name[:-1].rstrip() if name.endswith('=') else name
 
     @property
     def value(self) -> 'tuple[str, ...]':
@@ -1149,8 +1142,7 @@ class ExceptHeader(Statement):
         return self.assign
 
     def validate(self, ctx: 'ValidationContext'):
-        as_token = self.get_token(Token.AS)
-        if as_token:
+        if as_token := self.get_token(Token.AS):
             variables = self.get_tokens(Token.ASSIGN)
             if not variables:
                 self.errors += ("EXCEPT's AS requires variable.",)

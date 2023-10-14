@@ -180,7 +180,7 @@ class HandlerExecutionFailed(ExecutionFailed):
                          exit_on_failure, continue_on_failure, skip)
 
     def _get(self, error, attr):
-        return bool(getattr(error, 'ROBOT_' + attr, False))
+        return bool(getattr(error, f'ROBOT_{attr}', False))
 
 
 class ExecutionFailures(ExecutionFailed):
@@ -215,9 +215,7 @@ class ExecutionFailures(ExecutionFailed):
 
     def _html_format(self, msg):
         from robot.utils import html_escape
-        if msg.startswith('*HTML*'):
-            return msg[6:].lstrip()
-        return html_escape(msg)
+        return msg[6:].lstrip() if msg.startswith('*HTML*') else html_escape(msg)
 
     def _get_attrs(self, errors):
         return {

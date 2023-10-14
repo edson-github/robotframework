@@ -199,9 +199,7 @@ class JsonLoader:
         if self._is_path(source):
             with open(source, encoding='UTF-8') as file:
                 return json.load(file)
-        if hasattr(source, 'read'):
-            return json.load(source)
-        return json.loads(source)
+        return json.load(source) if hasattr(source, 'read') else json.loads(source)
 
     def _is_path(self, source):
         if isinstance(source, Path):

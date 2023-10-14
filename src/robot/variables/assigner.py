@@ -105,8 +105,9 @@ class VariableAssigner:
 
     def assign(self, return_value):
         context = self._context
-        context.output.trace(lambda: 'Return: %s' % prepr(return_value),
-                             write_if_flat=False)
+        context.output.trace(
+            lambda: f'Return: {prepr(return_value)}', write_if_flat=False
+        )
         resolver = ReturnValueResolver(self._assignment)
         for name, items, value in resolver.resolve(return_value):
             if items:
@@ -189,7 +190,7 @@ class VariableAssigner:
         try:
             value = self._validate_item_assign(name, value)
             var[selector] = value
-        except (IndexError, TypeError, Exception):
+        except Exception:
             var_type = type_name(var)
             raise VariableError(
                 f"Setting value to {var_type} variable "
@@ -261,10 +262,10 @@ class _MultiReturnValueResolver:
             self._raise_expected_list(return_value)
 
     def _raise_expected_list(self, ret):
-        self._raise('Expected list-like value, got %s.' % type_name(ret))
+        self._raise(f'Expected list-like value, got {type_name(ret)}.')
 
     def _raise(self, error):
-        raise VariableError('Cannot set variables: %s' % error)
+        raise VariableError(f'Cannot set variables: {error}')
 
     def _validate(self, return_count):
         raise NotImplementedError

@@ -72,8 +72,10 @@ class _ListenerArgumentsFromItem(ListenerArguments):
     _attribute_names = None
 
     def _get_version2_arguments(self, item):
-        attributes = dict((name, self._get_attribute_value(item, name))
-                          for name in self._attribute_names)
+        attributes = {
+            name: self._get_attribute_value(item, name)
+            for name in self._attribute_names
+        }
         attributes.update(self._get_extra_attributes(item))
         return self._get_name(item) or '', attributes
 
@@ -82,16 +84,12 @@ class _ListenerArgumentsFromItem(ListenerArguments):
 
     def _get_attribute_value(self, item, name):
         value = getattr(item, name)
-        if value is None:
-            return ''
-        return self._take_copy_of_mutable_value(value)
+        return '' if value is None else self._take_copy_of_mutable_value(value)
 
     def _take_copy_of_mutable_value(self, value):
         if is_dict_like(value):
             return dict(value)
-        if is_list_like(value):
-            return list(value)
-        return value
+        return list(value) if is_list_like(value) else value
 
     def _get_extra_attributes(self, item):
         return {}

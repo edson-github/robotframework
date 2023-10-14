@@ -45,9 +45,7 @@ class Keyword(BodyItem):
 
     @property
     def id(self) -> 'str|None':
-        if not self:
-            return None
-        return super().id
+        return None if not self else super().id
 
     def visit(self, visitor: 'SuiteVisitor'):
         """:mod:`Visitor interface <robot.model.visitor>` entry-point."""

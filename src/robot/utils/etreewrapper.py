@@ -79,6 +79,4 @@ class ETSource:
     def _path_to_string(self, path):
         if is_pathlike(path):
             return str(path)
-        if is_bytes(path):
-            return fsdecode(path)
-        return path
+        return fsdecode(path) if is_bytes(path) else path

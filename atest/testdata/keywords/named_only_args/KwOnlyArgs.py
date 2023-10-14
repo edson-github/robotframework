@@ -7,11 +7,11 @@ def many_kw_only_args(*, first, second, third):
 
 
 def kw_only_arg_with_default(*, kwo='default', another='another'):
-    return '{}-{}'.format(kwo, another)
+    return f'{kwo}-{another}'
 
 
 def mandatory_after_defaults(*, default1='xxx', mandatory, default2='zzz'):
-    return '{}-{}-{}'.format(default1, mandatory, default2)
+    return f'{default1}-{mandatory}-{default2}'
 
 
 def kw_only_arg_with_annotation(*, kwo: str):

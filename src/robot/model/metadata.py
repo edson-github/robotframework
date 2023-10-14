@@ -29,9 +29,9 @@ class Metadata(NormalizedDict[str]):
 
     def __setitem__(self, key: str, value: str):
         if not isinstance(key, str):
-            key = str(key)
+            key = key
         if not isinstance(value, str):
-            value = str(value)
+            value = value
         super().__setitem__(key, value)
 
     def __str__(self):

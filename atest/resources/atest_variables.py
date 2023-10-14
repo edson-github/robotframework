@@ -20,6 +20,6 @@ SYSTEM_ENCODING = locale.getpreferredencoding(False)
 if os.name == 'nt':
     output = subprocess.check_output('chcp', shell=True, encoding='ASCII',
                                      errors='ignore')
-    CONSOLE_ENCODING = 'cp' + output.split()[-1]
+    CONSOLE_ENCODING = f'cp{output.split()[-1]}'
 else:
     CONSOLE_ENCODING = locale.getdefaultlocale()[-1]

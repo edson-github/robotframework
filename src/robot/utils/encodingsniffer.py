@@ -98,7 +98,7 @@ def _get_windows_console_encoding():
 def _get_code_page(method_name):
     from ctypes import cdll
     method = getattr(cdll.kernel32, method_name)
-    return 'cp%s' % method()
+    return f'cp{method()}'
 
 
 def _is_valid(encoding):

@@ -50,7 +50,7 @@ def printable_name(string, code_style=False):
 def _split_camel_case(string):
     tokens = []
     token = []
-    for prev, char, next in zip(' ' + string, string, string[1:] + ' '):
+    for prev, char, next in zip(f' {string}', string, f'{string[1:]} '):
         if _is_camel_case_boundary(prev, char, next):
             if token:
                 tokens.append(''.join(token))
@@ -90,7 +90,7 @@ def seq2str2(sequence):
     """Returns sequence in format `[ item 1 | item 2 | ... ]`."""
     if not sequence:
         return '[ ]'
-    return '[ %s ]' % ' | '.join(safe_str(item) for item in sequence)
+    return f"[ {' | '.join(safe_str(item) for item in sequence)} ]"
 
 
 def test_or_task(text: str, rpa: bool):

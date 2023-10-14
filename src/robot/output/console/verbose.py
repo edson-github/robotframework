@@ -147,7 +147,7 @@ class VerboseWriter:
             self._write_info()
 
     def output(self, name, path):
-        self.stdout.write(f"{name+':':8} {path}\n")
+        self.stdout.write(f"{f'{name}:':8} {path}\n")
 
 
 class KeywordMarker:

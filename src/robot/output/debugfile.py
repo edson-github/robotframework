@@ -31,7 +31,7 @@ def DebugFile(path):
         LOGGER.error(err.message)
         return None
     else:
-        LOGGER.info('Debug file: %s' % path)
+        LOGGER.info(f'Debug file: {path}')
         return _DebugFileWriter(outfile)
 
 

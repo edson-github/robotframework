@@ -41,7 +41,7 @@ class Randomizer(SuiteVisitor):
                          (True, False): 'Suites',
                          (False, True): 'Tests'}
         randomized = (self.randomize_suites, self.randomize_tests)
-        return '%s (seed %s)' % (possibilities[randomized], self.seed)
+        return f'{possibilities[randomized]} (seed {self.seed})'
 
     def visit_test(self, test):
         pass

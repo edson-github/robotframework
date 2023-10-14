@@ -35,11 +35,10 @@ def write(msg, level, html=False):
     if callable(msg):
         msg = str(msg)
     if level.upper() not in ('TRACE', 'DEBUG', 'INFO', 'HTML', 'WARN', 'ERROR'):
-        if level.upper() == 'CONSOLE':
-            level = 'INFO'
-            console(msg)
-        else:
-            raise RuntimeError("Invalid log level '%s'." % level)
+        if level.upper() != 'CONSOLE':
+            raise RuntimeError(f"Invalid log level '{level}'.")
+        level = 'INFO'
+        console(msg)
     if threading.current_thread().name in LOGGING_THREADS:
         LOGGER.log_message(Message(msg, level, html))
 

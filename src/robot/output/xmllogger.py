@@ -37,10 +37,7 @@ class XmlLoggerAdapter(LoggerApi):
         return self._flat_xml_logger
 
     def flatten(self, flatten):
-        if flatten:
-            self.logger = self.flat_xml_logger
-        else:
-            self.logger = self._xml_logger
+        self.logger = self.flat_xml_logger if flatten else self._xml_logger
 
     def close(self):
         self.logger.close()

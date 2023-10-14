@@ -553,8 +553,7 @@ class TryRunner:
             else:
                 self._run_excepts(data, result, error, run=False)
                 error = self._run_else(data, result, run=run_excepts_or_else)
-            error = self._run_finally(data, result, run) or error
-            if error:
+            if error := self._run_finally(data, result, run) or error:
                 raise error
 
     def _run_invalid(self, data, result):
@@ -626,14 +625,16 @@ class TryRunner:
             pattern_type = self._context.variables.replace_string(branch.pattern_type)
         else:
             pattern_type = 'LITERAL'
-        matcher = matchers.get(pattern_type.upper())
-        if not matcher:
+        if matcher := matchers.get(pattern_type.upper()):
+            return any(
+                matcher(
+                    error.message, self._context.variables.replace_string(pattern)
+                )
+                for pattern in branch.patterns
+            )
+        else:
             raise DataError(f"Invalid EXCEPT pattern type '{pattern_type}'. "
                             f"Valid values are {seq2str(matchers)}.")
-        for pattern in branch.patterns:
-            if matcher(error.message, self._context.variables.replace_string(pattern)):
-                return True
-        return False
 
     def _run_else(self, data, result, run):
         if data.else_branch:

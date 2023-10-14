@@ -130,7 +130,7 @@ class VariableScopes:
         scope[name] = value
         # Avoid creating new list/dict objects in different scopes.
         if name[0] != '$':
-            name = '$' + name[1:]
+            name = f'${name[1:]}'
             value = scope[name]
         return name, value
 

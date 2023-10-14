@@ -57,7 +57,7 @@ class TestArgumentParserInit(unittest.TestCase):
         self.ap = ArgumentParser(USAGE)
 
     def assert_long_opts(self, expected, ap=None):
-        expected += ['no' + e for e in expected if not e.endswith('=')]
+        expected += [f'no{e}' for e in expected if not e.endswith('=')]
         long_opts = (ap or self.ap)._long_opts
         assert_equal(sorted(long_opts), sorted(expected))
 
@@ -237,7 +237,7 @@ class TestArgumentParserParseArgs(unittest.TestCase):
         p2 = os.path.abspath('..')
         assert_equal(ap._get_pythonpath(p1), [p1])
         assert_equal(ap._get_pythonpath([p1,p2]), [p1,p2])
-        assert_equal(ap._get_pythonpath([p1 + ':' + p2]), [p1,p2])
+        assert_equal(ap._get_pythonpath([f'{p1}:{p2}']), [p1,p2])
         assert_true(p1 in ap._get_pythonpath(os.path.join(p2,'*')))
 
     def test_arguments_are_globbed(self):
@@ -424,7 +424,7 @@ class TestPrintHelpAndVersion(unittest.TestCase):
     def test_print_version_when_version_not_set(self):
         ap = ArgumentParser(' --version', name='Kekkonen')
         msg = assert_raises(Information, ap.parse_args, ['--version'])
-        assert_equal(str(msg), 'Kekkonen %s' % get_full_version())
+        assert_equal(str(msg), f'Kekkonen {get_full_version()}')
 
     def test_version_is_replaced_in_help(self):
         assert_raises_with_msg(Information, USAGE.replace('<VERSION>', '1.0 alpha'),

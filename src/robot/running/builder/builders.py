@@ -168,8 +168,7 @@ class TestSuiteBuilder:
         # so need to use `os.path.normpath()`. Also that _may_ resolve symlinks,
         # but we need to do it for backwards compatibility.
         paths = [Path(normpath(p)).absolute() for p in paths]
-        non_existing = [p for p in paths if not p.exists()]
-        if non_existing:
+        if non_existing := [p for p in paths if not p.exists()]:
             raise DataError(f"Parsing {seq2str(non_existing)} failed: "
                             f"File or directory to execute does not exist.")
         return tuple(paths)

@@ -39,7 +39,7 @@ class Listeners:
         for name in self._method_names:
             method = ListenerMethods(name, listeners)
             if name.endswith(('_keyword', '_file', '_import', 'log_message')):
-                name = '_' + name
+                name = f'_{name}'
             setattr(self, name, method)
 
     def set_log_level(self, level):
@@ -58,11 +58,11 @@ class Listeners:
             self._log_message(msg)
 
     def imported(self, import_type, name, attrs):
-        method = getattr(self, '_%s_import' % import_type.lower())
+        method = getattr(self, f'_{import_type.lower()}_import')
         method(name, attrs)
 
     def output_file(self, file_type, path):
-        method = getattr(self, '_%s_file' % file_type.lower())
+        method = getattr(self, f'_{file_type.lower()}_file')
         method(path)
 
     def __bool__(self):
@@ -80,7 +80,7 @@ class LibraryListeners:
         for name in self._method_names:
             method = LibraryListenerMethods(name)
             if name == 'log_message':
-                name = '_' + name
+                name = f'_{name}'
             setattr(self, name, method)
 
     def register(self, listeners, library):
@@ -156,8 +156,9 @@ class ListenerProxy(AbstractLoggerProxy):
                             "'ROBOT_LISTENER_API_VERSION' attribute."
                             % self.name)
         except (ValueError, TypeError):
-            raise DataError("Listener '%s' uses unsupported API version '%s'."
-                            % (self.name, listener.ROBOT_LISTENER_API_VERSION))
+            raise DataError(
+                f"Listener '{self.name}' uses unsupported API version '{listener.ROBOT_LISTENER_API_VERSION}'."
+            )
         return version
 
     @classmethod
@@ -169,7 +170,7 @@ class ListenerProxy(AbstractLoggerProxy):
                 imported.append(cls(listener, method_names, prefix))
             except DataError as err:
                 name = listener if is_string(listener) else type_name(listener)
-                msg = "Taking listener '%s' into use failed: %s" % (name, err)
+                msg = f"Taking listener '{name}' into use failed: {err}"
                 if raise_on_error:
                     raise DataError(msg)
                 LOGGER.error(msg)

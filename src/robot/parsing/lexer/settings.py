@@ -96,11 +96,14 @@ class Settings(ABC):
         )
 
     def _is_valid_somewhere(self, name: str, classes: 'list[type[Settings]]') -> bool:
-        for cls in classes:
-            if (name in cls.names or name in cls.aliases
-                    or self._is_valid_somewhere(name, cls.__subclasses__())):
-                return True
-        return False
+        return any(
+            (
+                name in cls.names
+                or name in cls.aliases
+                or self._is_valid_somewhere(name, cls.__subclasses__())
+            )
+            for cls in classes
+        )
 
     @abstractmethod
     def _not_valid_here(self, name: str) -> str:

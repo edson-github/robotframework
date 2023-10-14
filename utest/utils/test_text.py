@@ -93,7 +93,7 @@ class TestCutHappensInsideLine(unittest.TestCase):
         lines[index] = 'abcdefgh' * _MAX_ERROR_LINE_LENGTH
         result = cut_long_message('\n'.join(lines)).splitlines()
         self._assert_basics(result, lines)
-        expected = lines[index][:_MAX_ERROR_LINE_LENGTH-3] + '...'
+        expected = f'{lines[index][:_MAX_ERROR_LINE_LENGTH - 3]}...'
         assert_equal(result[index], expected)
 
     def test_long_line_cut_after_cut_message(self):
@@ -102,7 +102,7 @@ class TestCutHappensInsideLine(unittest.TestCase):
         lines[index] = 'abcdefgh' * _MAX_ERROR_LINE_LENGTH
         result = cut_long_message('\n'.join(lines)).splitlines()
         self._assert_basics(result, lines)
-        expected = '...' + lines[index][-_MAX_ERROR_LINE_LENGTH+3:]
+        expected = f'...{lines[index][-_MAX_ERROR_LINE_LENGTH + 3:]}'
         assert_equal(result[index+1], expected)
 
     def test_one_huge_line(self):
@@ -263,7 +263,7 @@ class TestSplitArgsFromNameOrPath(unittest.TestCase):
         open(path, 'w').close()
         try:
             assert_equal(self.method(path), (abspath(path), []))
-            assert_equal(self.method(path+':arg'), (abspath(path), ['arg']))
+            assert_equal(self.method(f'{path}:arg'), (abspath(path), ['arg']))
         finally:
             os.remove(path)
 

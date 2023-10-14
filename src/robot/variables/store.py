@@ -87,7 +87,7 @@ class VariableStore:
 
     def _undecorate(self, name):
         if not is_assign(name):
-            raise VariableError("Invalid variable name '%s'." % name)
+            raise VariableError(f"Invalid variable name '{name}'.")
         return name[2:-1]
 
     def _undecorate_and_validate(self, name, value):
@@ -103,8 +103,9 @@ class VariableStore:
         return undecorated, value
 
     def _raise_cannot_set_type(self, name, value, expected):
-        raise VariableError("Cannot set variable '%s': Expected %s-like value, got %s."
-                            % (name, expected, type_name(value)))
+        raise VariableError(
+            f"Cannot set variable '{name}': Expected {expected}-like value, got {type_name(value)}."
+        )
 
     def __len__(self):
         return len(self.data)

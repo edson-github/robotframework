@@ -19,9 +19,9 @@ class BulkLoadRemoteServer(RemoteServer):
         for kw in self.get_keyword_names():
             info_dict[kw] = dict(
                 args=['arg', '*extra'] if kw == 'some_keyword' else ['arg=None'],
-                doc="Documentation for '%s'." % kw,
+                doc=f"Documentation for '{kw}'.",
                 tags=['tag'],
-                types=['bool'] if kw == 'some_keyword' else ['int']
+                types=['bool'] if kw == 'some_keyword' else ['int'],
             )
         return info_dict
 

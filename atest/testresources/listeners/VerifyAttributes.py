@@ -2,7 +2,7 @@ import os
 
 OUTFILE = open(os.path.join(os.getenv('TEMPDIR'), 'listener_attrs.txt'), 'w')
 START = 'doc starttime '
-END = START + 'endtime elapsedtime status '
+END = f'{START}endtime elapsedtime status '
 SUITE = 'id longname metadata source tests suites totaltests '
 TEST = 'id longname tags template originalname source lineno '
 KW = 'kwname libname args assign tags type lineno source status '
@@ -49,13 +49,13 @@ def verify_attrs(method_name, attrs, names):
         if isinstance(exp_type, list):
             verify_attr(name, value, list)
             for index, item in enumerate(value):
-                verify_attr('%s[%s]' % (name, index), item, exp_type[0])
+                verify_attr(f'{name}[{index}]', item, exp_type[0])
         elif isinstance(exp_type, dict):
             verify_attr(name, value, dict)
             key_type, value_type = dict(exp_type).popitem()
             for key, value in value.items():
-                verify_attr('%s[%s] (key)' % (name, key), key, key_type)
-                verify_attr('%s[%s] (value)' % (name, key), value, value_type)
+                verify_attr(f'{name}[{key}] (key)', key, key_type)
+                verify_attr(f'{name}[{key}] (value)', value, value_type)
         else:
             verify_attr(name, value, exp_type)
 
@@ -74,18 +74,19 @@ def format_value(value):
     if isinstance(value, int):
         return str(value)
     if isinstance(value, list):
-        return '[%s]' % ', '.join(format_value(item) for item in value)
+        return f"[{', '.join(format_value(item) for item in value)}]"
     if isinstance(value, dict):
-        return '{%s}' % ', '.join('%s: %s' % (format_value(k), format_value(v))
-                                  for k, v in value.items())
+        return '{%s}' % ', '.join(
+            f'{format_value(k)}: {format_value(v)}' for k, v in value.items()
+        )
     if value is None:
         return 'None'
-    return 'FAILED! Invalid argument type %s.' % type(value)
+    return f'FAILED! Invalid argument type {type(value)}.'
 
 
 def verify_name(name, kwname=None, libname=None, **ignored):
     if libname:
-        if name != '%s.%s' % (libname, kwname):
+        if name != f'{libname}.{kwname}':
             OUTFILE.write("FAILED | KW NAME: '%s' != '%s.%s'\n" % (name, libname, kwname))
     else:
         if name != kwname:
@@ -119,7 +120,7 @@ class VerifyAttributes:
             extra += ' variables'
         if type_ == 'FOR':
             extra += FOR_FLAVOR_EXTRA.get(attrs['flavor'], '')
-        verify_attrs('START ' + type_, attrs, START + KW + extra)
+        verify_attrs(f'START {type_}', attrs, START + KW + extra)
         if type_ in ('KEYWORD', 'SETUP', 'TEARDOWN'):
             verify_name(name, **attrs)
         self._keyword_stack.append(type_)
@@ -132,7 +133,7 @@ class VerifyAttributes:
             extra += ' variables'
         if type_ == 'FOR':
             extra += FOR_FLAVOR_EXTRA.get(attrs['flavor'], '')
-        verify_attrs('END ' + type_, attrs, END + KW + extra)
+        verify_attrs(f'END {type_}', attrs, END + KW + extra)
         if type_ in ('KEYWORD', 'SETUP', 'TEARDOWN'):
             verify_name(name, **attrs)
 

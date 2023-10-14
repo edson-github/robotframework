@@ -31,9 +31,8 @@ def file_writer(path=None, encoding='UTF-8', newline=None, usage=None):
     try:
         return io.open(path, 'w', encoding=encoding, newline=newline)
     except EnvironmentError:
-        usage = '%s file' % usage if usage else 'file'
-        raise DataError("Opening %s '%s' failed: %s"
-                        % (usage, path, get_error_message()))
+        usage = f'{usage} file' if usage else 'file'
+        raise DataError(f"Opening {usage} '{path}' failed: {get_error_message()}")
 
 
 def binary_file_writer(path=None):
@@ -55,6 +54,7 @@ def create_destination_directory(path, usage=None):
         try:
             os.makedirs(directory, exist_ok=True)
         except EnvironmentError:
-            usage = '%s directory' % usage if usage else 'directory'
-            raise DataError("Creating %s '%s' failed: %s"
-                            % (usage, directory, get_error_message()))
+            usage = f'{usage} directory' if usage else 'directory'
+            raise DataError(
+                f"Creating {usage} '{directory}' failed: {get_error_message()}"
+            )
